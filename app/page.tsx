@@ -16,48 +16,31 @@ export default function Home() {
       </div>
 
       <div className="flex gap-10 w-2/5">
-        <Link
-          className={buttonStyles({
-            size: "lg",
-            color: "primary",
-            radius: "full",
-            variant: "shadow",
-            fullWidth: true,
-          })}
-          href={siteConfig.links.onboard}
-        >
-          Create
-        </Link>
-        {/* <Button
+        <Button
           href={siteConfig.links.onboard}
           as={Link}
+          size="lg"
           color="primary"
           variant="shadow"
+          isBlock={true}
+          fullWidth={true}
         >
           Create
-        </Button> */}
+        </Button>
       </div>
       <div className="flex gap-10 w-2/5">
-        <Link
-          className={buttonStyles({
-            size: "lg",
-            color: "success",
-            radius: "full",
-            variant: "shadow",
-            fullWidth: true,
-          })}
-          href={siteConfig.links.planner}
-        >
-          Load
-        </Link>
-        {/* <Button
+        <Button
           href={siteConfig.links.onboard}
           as={Link}
+          size="lg"
           color="success"
+          className="text-white"
           variant="shadow"
+          isBlock={true}
+          fullWidth={true}
         >
-          Create
-        </Button> */}
+          Load
+        </Button>
       </div>
 
     </section>
