@@ -1,6 +1,5 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
-import { Link } from "@nextui-org/link";
 import clsx from "clsx";
 
 import { Providers } from "./providers";
@@ -48,7 +47,9 @@ export default function RootLayout({
               {children}
             </main>
             <footer className="w-full flex items-center justify-left py-3 px-10 uppercase">
-              <span className="text-default-600">Made with Passion by Alek and Qianbo</span>
+              <span className="text-default-600">
+                Made with Passion by Alek and Qianbo
+              </span>
             </footer>
           </div>
         </Providers>

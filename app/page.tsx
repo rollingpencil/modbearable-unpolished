@@ -1,4 +1,3 @@
-import { button as buttonStyles } from "@nextui-org/theme";
 import { Link, Button } from "@nextui-org/react";
 
 import { siteConfig } from "@/config/site";
@@ -17,32 +16,31 @@ export default function Home() {
 
       <div className="flex gap-10 w-2/5">
         <Button
-          href={siteConfig.links.onboard}
           as={Link}
-          size="lg"
           color="primary"
-          variant="shadow"
-          isBlock={true}
           fullWidth={true}
+          href={siteConfig.links.onboard}
+          isBlock={true}
+          size="lg"
+          variant="shadow"
         >
           Create
         </Button>
       </div>
       <div className="flex gap-10 w-2/5">
         <Button
-          href={siteConfig.links.onboard}
           as={Link}
-          size="lg"
-          color="success"
           className="text-white"
-          variant="shadow"
-          isBlock={true}
+          color="success"
           fullWidth={true}
+          href={siteConfig.links.onboard}
+          isBlock={true}
+          size="lg"
+          variant="shadow"
         >
           Load
         </Button>
       </div>
-
     </section>
   );
 }
