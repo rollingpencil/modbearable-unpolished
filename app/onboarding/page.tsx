@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Button } from "@nextui-org/button";
 
+import { redirectToPlanner } from "../actions";
+
 import { PrevEducationSelection } from "@/components/onboarding/previousEducationSelection";
 import { NonPolyOnboarding } from "@/components/onboarding/nonPolyOnboarding";
 import { PolyOnboarding } from "@/components/onboarding/polyOnboarding";
@@ -15,6 +17,18 @@ export default function OnboardingPage() {
   // const [prevPolyCourse, setPrevPolyCourse] = useState(null);
   const [ready, setReady] = useState(false);
   const [onboarding, setOnboarding] = useState({ eduBackground: null });
+
+  let onSubmit = () => {
+    fetch("/api/onboarding/")
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data);
+        // console.log(JSON.stringify(data))
+        // console.log(btoa(JSON.stringify(data)))
+        localStorage.setItem("data", btoa(JSON.stringify(data)));
+        redirectToPlanner();
+      });
+  };
 
   return onboarding.eduBackground == null ? (
     <PrevEducationSelection
@@ -44,6 +58,7 @@ export default function OnboardingPage() {
             isDisabled={!ready}
             size="lg"
             variant="shadow"
+            onPress={onSubmit}
           >
             Submit
           </Button>
