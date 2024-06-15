@@ -33,7 +33,7 @@ export default function Home() {
           className="text-white"
           color="success"
           fullWidth={true}
-          href={siteConfig.links.onboard}
+          href={siteConfig.links.planner}
           isBlock={true}
           size="lg"
           variant="shadow"
