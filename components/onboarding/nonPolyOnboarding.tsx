@@ -1,12 +1,11 @@
 import { Button, ButtonGroup } from "@nextui-org/react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useEffect } from "react";
 
 import { subtitle } from "../primitives";
-import { useEffect } from "react";
 
 export const NonPolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
   let setMathPrereq = (e) => {
-    console.log(e.target.value);
     setOnboarding({ ...onboarding, mathPrereq: e.target.value ? true : false });
   };
 
@@ -16,8 +15,8 @@ export const NonPolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
   };
 
   useEffect(() => {
-    setReady(onboarding.eduBackground && onboarding.mathPrereq)
-  },[onboarding])
+    setReady(onboarding.eduBackground && onboarding.mathPrereq);
+  }, [onboarding]);
 
   return (
     <section className="flex flex-col items-left justify-Left gap-4 py-8 px-8 md:py-10">

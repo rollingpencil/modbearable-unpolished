@@ -14,7 +14,6 @@ export const PrevEducationSelection = ({ onboarding, setOnboarding }) => {
       .then((res) => res.json())
       .then((data) => {
         setInstituteList(data.institutues);
-        console.log(data);
       });
   }, []);
 
@@ -26,16 +25,16 @@ export const PrevEducationSelection = ({ onboarding, setOnboarding }) => {
 
       <div className="flex gap-10 w-4/5">
         <ButtonGroup>
-          {instituteList.map((inst, key) => (
+          {instituteList.map((inst) => (
             <Button
               key={inst.instituteid}
+              className="w-100"
               color="primary"
               fullWidth={true}
               size="lg"
               value={inst.instituteid}
               variant="shadow"
               onPress={setPrevEdu}
-              className="w-100"
             >
               {inst.name}
             </Button>

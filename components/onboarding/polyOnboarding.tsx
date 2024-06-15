@@ -10,7 +10,6 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
   const [diplomaList, setDiplomaList] = useState([]);
 
   let setPolySelection = (e) => {
-    console.log(e.target.value);
     setOnboarding({ ...onboarding, poly: e.target.value });
     setPoly(e.target.value);
   };
@@ -20,12 +19,10 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
   };
 
   let setMathPrereq = (e) => {
-    console.log(e.target.value);
     setOnboarding({ ...onboarding, mathPrereq: e.target.value ? true : false });
   };
 
   let setDiplomaSelection = (e) => {
-    console.log(e.target.value);
     setOnboarding({ ...onboarding, diploma: e.target.value });
   };
 
@@ -34,7 +31,6 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
       .then((res) => res.json())
       .then((data) => {
         setPolyList(data.poly);
-        console.log(data);
       });
   }, [poly]);
 
@@ -44,14 +40,18 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
         .then((res) => res.json())
         .then((data) => {
           setDiplomaList(data.courses);
-          console.log(data);
         });
     }
   }, [poly]);
 
   useEffect(() => {
-    setReady(onboarding.eduBackground && onboarding.mathPrereq && onboarding.poly && onboarding.diploma)
-  },[onboarding])
+    setReady(
+      onboarding.eduBackground &&
+        onboarding.mathPrereq &&
+        onboarding.poly &&
+        onboarding.diploma,
+    );
+  }, [onboarding]);
 
   return (
     <section className="flex flex-col items-left justify-Left gap-4 py-8 px-8 md:py-10">
@@ -70,7 +70,7 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
 
       <div className="flex gap-10 w-2/5">
         <ButtonGroup>
-          {polyList.map((p, key) => (
+          {polyList.map((p) => (
             <Button
               key={p.id}
               color="primary"
@@ -102,7 +102,7 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
               size="lg"
               onChange={setDiplomaSelection}
             >
-              {diplomaList.map((d, key) => (
+              {diplomaList.map((d) => (
                 <SelectItem key={d.dipid}>{d.name}</SelectItem>
               ))}
             </Select>
