@@ -1,7 +1,9 @@
+import { NextResponse } from 'next/server'
+
 export const dynamic = "force-dynamic"; // defaults to auto
 
 export async function GET(request: Request) {
-  return Response.json({
+  return NextResponse.json({
     requirements: [
       {
         course: "CS1101S",
@@ -25,5 +27,5 @@ export async function GET(request: Request) {
         wildcard: false,
       },
     ],
-  });
+  }, { status: 200 });
 }

@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server'
+
 type PolyIDParams = {
   polyid: string;
 };
@@ -6,7 +8,7 @@ export const dynamic = "force-dynamic"; // defaults to auto
 export async function GET(request: Request, context: { params: PolyIDParams }) {
   switch (context.params.polyid) {
     case "sp":
-      return Response.json({
+      return NextResponse.json({
         courses: [
           {
             dipid: "S69",
@@ -17,10 +19,10 @@ export async function GET(request: Request, context: { params: PolyIDParams }) {
             name: "Diploma in Information Security Management",
           },
         ],
-      });
+      }, { status: 200 });
     default:
-      return Response.json({
+      return NextResponse.json({
         courses: [],
-      });
+      }, { status: 200 });
   }
 }

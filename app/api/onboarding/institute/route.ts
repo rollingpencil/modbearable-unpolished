@@ -1,6 +1,8 @@
+import { NextResponse } from 'next/server'
+
 export const dynamic = "force-dynamic"; // defaults to auto
 export async function GET(request: Request) {
-  return Response.json({
+  return NextResponse.json({
     institutues: [
       {
         instituteid: "jc",
@@ -15,5 +17,5 @@ export async function GET(request: Request) {
         name: "Polytechnic",
       },
     ],
-  });
+  }, { status: 200 });
 }

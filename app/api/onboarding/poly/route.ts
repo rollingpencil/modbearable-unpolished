@@ -1,7 +1,9 @@
+import { NextResponse } from 'next/server'
+
 export const dynamic = "force-dynamic"; // defaults to auto
 
 export async function GET(request: Request) {
-  return Response.json({
+  return NextResponse.json({
     poly: [
       {
         id: "sp",
@@ -24,5 +26,5 @@ export async function GET(request: Request) {
         name: "Temasek Polytechnic",
       },
     ],
-  });
+  }, { status: 200 });
 }
