@@ -13,7 +13,6 @@ export const NonPolyOnboarding = ({
   setReady,
 }: OnboardingComponentProps) => {
   let setMathPrereq = (e: PressEvent) => {
-
     setOnboarding({
       ...onboarding,
       mathPrereq: (e.target as InputElement).value ? true : false,

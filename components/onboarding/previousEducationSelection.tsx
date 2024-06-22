@@ -11,7 +11,7 @@ export const PrevEducationSelection = ({
   setOnboarding,
 }: OnboardingComponentProps) => {
   let [instituteList, setInstituteList] = useState<Institute[]>([]);
-  let setPrevEdu = (e : PressEvent) => {
+  let setPrevEdu = (e: PressEvent) => {
     setOnboarding({
       ...onboarding,
       eduBackground: (e.target as InputElement).value,
@@ -57,4 +57,4 @@ export const PrevEducationSelection = ({
 type Institute = {
   instituteid: string;
   name: string;
-}
+};
