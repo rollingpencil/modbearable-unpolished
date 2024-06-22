@@ -9,14 +9,13 @@ import { PrevEducationSelection } from "@/components/onboarding/previousEducatio
 import { NonPolyOnboarding } from "@/components/onboarding/nonPolyOnboarding";
 import { PolyOnboarding } from "@/components/onboarding/polyOnboarding";
 import { POLY_INSTITUDE_TAG } from "@/utils/feconst";
+import { Onboarding } from "@/types";
 
 export default function OnboardingPage() {
-  // const [eduInstitue, setEduInstitude] = useState(null);
-  // const [mathPrereq, setMathPrereq] = useState(null);
-  // const [prevPoly, setPrevPoly] = useState(null);
-  // const [prevPolyCourse, setPrevPolyCourse] = useState(null);
   const [ready, setReady] = useState(false);
-  const [onboarding, setOnboarding] = useState({ eduBackground: null });
+  const [onboarding, setOnboarding] = useState<Onboarding>({
+    eduBackground: undefined,
+  });
 
   let onSubmit = () => {
     fetch("/api/onboarding/")
@@ -34,6 +33,7 @@ export default function OnboardingPage() {
     <PrevEducationSelection
       onboarding={onboarding}
       setOnboarding={setOnboarding}
+      setReady={setReady}
     />
   ) : (
     <>

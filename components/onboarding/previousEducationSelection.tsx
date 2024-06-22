@@ -1,12 +1,21 @@
+import { PressEvent } from "@react-types/shared";
 import { Button, ButtonGroup } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 
 import { subtitle } from "../primitives";
 
-export const PrevEducationSelection = ({ onboarding, setOnboarding }) => {
-  let [instituteList, setInstituteList] = useState([]);
-  let setPrevEdu = (e) => {
-    setOnboarding({ ...onboarding, eduBackground: e.target.value });
+import { InputElement, OnboardingComponentProps } from "@/types";
+
+export const PrevEducationSelection = ({
+  onboarding,
+  setOnboarding,
+}: OnboardingComponentProps) => {
+  let [instituteList, setInstituteList] = useState<Institute[]>([]);
+  let setPrevEdu = (e : PressEvent) => {
+    setOnboarding({
+      ...onboarding,
+      eduBackground: (e.target as InputElement).value,
+    });
   };
 
   useEffect(() => {
@@ -44,3 +53,8 @@ export const PrevEducationSelection = ({ onboarding, setOnboarding }) => {
     </section>
   );
 };
+
+type Institute = {
+  instituteid: string;
+  name: string;
+}

@@ -1,21 +1,24 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic"; // defaults to auto
 export async function GET(request: Request) {
-  return NextResponse.json({
-    institutues: [
-      {
-        instituteid: "jc",
-        name: "Junior College",
-      },
-      {
-        instituteid: "ib",
-        name: "International Baccalaureate",
-      },
-      {
-        instituteid: "poly",
-        name: "Polytechnic",
-      },
-    ],
-  }, { status: 200 });
+  return NextResponse.json(
+    {
+      institutues: [
+        {
+          instituteid: "jc",
+          name: "Junior College",
+        },
+        {
+          instituteid: "ib",
+          name: "International Baccalaureate",
+        },
+        {
+          instituteid: "poly",
+          name: "Polytechnic",
+        },
+      ],
+    },
+    { status: 200 },
+  );
 }

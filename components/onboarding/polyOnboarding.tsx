@@ -1,28 +1,37 @@
+import { PressEvent } from "@react-types/shared";
 import { Button, ButtonGroup, Select, SelectItem } from "@nextui-org/react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 
 import { subtitle } from "../primitives";
 
-export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
-  const [poly, setPoly] = useState(null);
-  const [polyList, setPolyList] = useState<PolyList[]>([]);
-  const [diplomaList, setDiplomaList] = useState([]);
+import { InputElement, OnboardingComponentProps } from "@/types";
 
-  let setPolySelection = (e) => {
-    setOnboarding({ ...onboarding, poly: e.target.value });
-    setPoly(e.target.value);
+export const PolyOnboarding = ({
+  onboarding,
+  setOnboarding,
+  setReady,
+}: OnboardingComponentProps) => {
+  const [poly, setPoly] = useState<string | null>(null);
+  const [polyList, setPolyList] = useState<PolyList[]>([]);
+  const [diplomaList, setDiplomaList] = useState<DiplomaList[]>([]);
+
+  let setPolySelection = (e: PressEvent) => {
+    let ele = e.target as InputElement;
+
+    setOnboarding({ ...onboarding, poly: ele.value });
+    setPoly(ele.value);
   };
 
   let onBack = () => {
-    setOnboarding({ eduBackground: null });
+    setOnboarding({ eduBackground: undefined });
   };
 
-  let setMathPrereq = (e) => {
-    setOnboarding({ ...onboarding, mathPrereq: e.target.value ? true : false });
+  let setMathPrereq = (e: PressEvent) => {
+    setOnboarding({ ...onboarding, mathPrereq: (e.target as InputElement).value ? true : false });
   };
 
-  let setDiplomaSelection = (e) => {
+  let setDiplomaSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOnboarding({ ...onboarding, diploma: e.target.value });
   };
 
@@ -46,10 +55,10 @@ export const PolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
 
   useEffect(() => {
     setReady(
-      onboarding.eduBackground &&
-        onboarding.mathPrereq &&
-        onboarding.poly &&
-        onboarding.diploma,
+      onboarding.eduBackground != undefined&&
+        onboarding.mathPrereq != undefined &&
+        onboarding.poly != undefined &&
+        onboarding.diploma != undefined,
     );
   }, [onboarding]);
 
@@ -152,3 +161,8 @@ type PolyList = {
   id: string;
   name: string;
 };
+
+type DiplomaList = {
+  dipid: string;
+  name: string;
+}

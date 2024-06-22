@@ -1,21 +1,35 @@
+import { PressEvent } from "@react-types/shared";
 import { Button, ButtonGroup } from "@nextui-org/react";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 
 import { subtitle } from "../primitives";
 
-export const NonPolyOnboarding = ({ onboarding, setOnboarding, setReady }) => {
-  let setMathPrereq = (e) => {
-    setOnboarding({ ...onboarding, mathPrereq: e.target.value ? true : false });
+import { InputElement, OnboardingComponentProps } from "@/types";
+
+export const NonPolyOnboarding = ({
+  onboarding,
+  setOnboarding,
+  setReady,
+}: OnboardingComponentProps) => {
+  let setMathPrereq = (e: PressEvent) => {
+
+    setOnboarding({
+      ...onboarding,
+      mathPrereq: (e.target as InputElement).value ? true : false,
+    });
   };
 
   let onBack = () => {
-    setOnboarding({ eduBackground: null });
+    setOnboarding({ eduBackground: undefined });
     setReady(false);
   };
 
   useEffect(() => {
-    setReady(onboarding.eduBackground && onboarding.mathPrereq);
+    setReady(
+      onboarding.eduBackground != undefined &&
+        onboarding.mathPrereq != undefined,
+    );
   }, [onboarding]);
 
   return (
