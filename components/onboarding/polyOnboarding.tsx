@@ -28,10 +28,7 @@ export const PolyOnboarding = ({
   };
 
   let setMathPrereq = (e: PressEvent) => {
-    setOnboarding({
-      ...onboarding,
-      mathPrereq: (e.target as InputElement).value ? true : false,
-    });
+    setOnboarding({ ...onboarding, mathPrereq: (e.target as InputElement).value ? true : false });
   };
 
   let setDiplomaSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -58,7 +55,7 @@ export const PolyOnboarding = ({
 
   useEffect(() => {
     setReady(
-      onboarding.eduBackground != undefined &&
+      onboarding.eduBackground != undefined&&
         onboarding.mathPrereq != undefined &&
         onboarding.poly != undefined &&
         onboarding.diploma != undefined,
@@ -168,4 +165,4 @@ type PolyList = {
 type DiplomaList = {
   dipid: string;
   name: string;
-};
+}
