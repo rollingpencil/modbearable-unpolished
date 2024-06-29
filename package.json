@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
+    "dev": "dotenvx run -f .env.dev -- next dev",
+    "build": "dotenvx run -f .env.production -- next build",
+    "start": "dotenvx run -f .env.production -- next start",
+    "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
+    "migrate:dev": "dotenvx run -f .env.dev -- npx prisma migrate dev --name mbdev --schema=./prisma/schema.dev.prisma"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
@@ -22,6 +23,7 @@
     "@nextui-org/switch": "^2.0.28",
     "@nextui-org/system": "2.1.0",
     "@nextui-org/theme": "2.2.0",
+    "@prisma/client": "^5.16.1",
     "@react-aria/ssr": "^3.9.2",
     "@react-aria/visually-hidden": "^3.8.10",
     "@types/node": "20.5.7",
