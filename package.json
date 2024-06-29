@@ -8,7 +8,8 @@
     "start": "dotenvx run -f .env.production -- next start",
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
     "migrate:dev": "dotenvx run -f .env.dev -- npx prisma migrate dev --name mbdev --schema=./prisma/dev/schema.dev.prisma",
-    "migrate:prod": "dotenvx run -f .env.production -- npx prisma migrate production --name mbprod --schema=./prisma/production/schema.production.prisma"
+    "migrate:prod": "dotenvx run -f .env.production -- npx prisma migrate production --name mbprod --schema=./prisma/production/schema.production.prisma",
+    "studio:dev": "dotenvx run -f .env.dev -- npx prisma studio --schema=./prisma/dev/schema.dev.prisma"
   },
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
