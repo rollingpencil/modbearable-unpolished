@@ -28,9 +28,9 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN \
-  if [ -f yarn.lock ]; then yarn run migrate:production; \
-  elif [ -f package-lock.json ]; then npm run migrate:production; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run migrate:production; \
+  if [ -f yarn.lock ]; then yarn run migrate:prod; \
+  elif [ -f package-lock.json ]; then npm run migrate:prod; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run migrate:prod; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
