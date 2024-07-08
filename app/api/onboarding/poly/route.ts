@@ -5,6 +5,8 @@ const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   try {
+    console.log("Called /poly")
+    await prisma.$connect();
     // Fetch polytechnic data from the database
     const polytechnics = await prisma.polytechnic.findMany({
       select: {

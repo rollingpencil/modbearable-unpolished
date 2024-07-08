@@ -28,18 +28,18 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN \
-  if [ -f yarn.lock ]; then yarn run prisgen:prod; \
-  elif [ -f package-lock.json ]; then npm run prisgen:prod; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run prisgen:prod; \
+  if [ -f yarn.lock ]; then yarn run prismagenerate; \
+  elif [ -f package-lock.json ]; then npm run prismagenerate; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run prismagenerate; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# RUN \
-#   if [ -f yarn.lock ]; then yarn run migrate:prod; \
-#   elif [ -f package-lock.json ]; then npm run migrate:prod; \
-#   elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run migrate:prod; \
-#   else echo "Lockfile not found." && exit 1; \
-#   fi
+RUN \
+  if [ -f yarn.lock ]; then yarn run migrate:prod; \
+  elif [ -f package-lock.json ]; then npm run migrate:prod; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run migrate:prod; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
 
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
