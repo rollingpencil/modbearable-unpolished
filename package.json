@@ -8,7 +8,7 @@
     "start": "dotenvx run -f .env.production -- next start",
     "lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
     "migrate:dev": "dotenvx run -f .env.dev -- npx prisma migrate dev --name mb",
-    "migrate:prod": "dotenvx run -f .env.production -- npx prisma migrate depoly",
+    "migrate:prod": "dotenvx run -f .env.production -- npx prisma migrate deploy",
     "studio:dev": "dotenvx run -f .env.dev -- npx prisma studio",
     "prismagenerate": "npx prisma generate"
   },
