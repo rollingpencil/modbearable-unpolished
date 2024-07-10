@@ -10,20 +10,20 @@ type FacIDParams = {
 type MajorType = {
   id: number;
   name: string;
-}
+};
 
 export async function GET(request: Request, context: { params: FacIDParams }) {
   const { facid } = context.params;
 
   try {
-    console.log("Called /faculty/[facid]")
+    console.log("Called /faculty/[facid]");
 
-    const facIdNum = Number(facid)
+    const facIdNum = Number(facid);
 
     await prisma.$connect();
 
     // Fetch diplomas based on polytechnicId
-    const facultyMajors : MajorType[] = await prisma.major.findMany({
+    const facultyMajors: MajorType[] = await prisma.major.findMany({
       where: {
         facultyId: facIdNum,
       },
@@ -36,7 +36,7 @@ export async function GET(request: Request, context: { params: FacIDParams }) {
     return NextResponse.json(
       {
         majors:
-            facultyMajors.length > 0
+          facultyMajors.length > 0
             ? facultyMajors.map((major: MajorType) => ({
                 majorid: major.id,
                 name: major.name,

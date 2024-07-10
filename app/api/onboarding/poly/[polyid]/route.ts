@@ -10,17 +10,17 @@ type PolyIDParams = {
 type DiplomaType = {
   id: string;
   name: string;
-}
+};
 
 export async function GET(request: Request, context: { params: PolyIDParams }) {
   const { polyid } = context.params;
 
   try {
-    console.log("Called /poly/[polyId]")
+    console.log("Called /poly/[polyId]");
     await prisma.$connect();
 
     // Fetch diplomas based on polytechnicId
-    const diplomas : DiplomaType[] = await prisma.diploma.findMany({
+    const diplomas: DiplomaType[] = await prisma.diploma.findMany({
       where: {
         polytechnicId: polyid,
       },
@@ -34,7 +34,7 @@ export async function GET(request: Request, context: { params: PolyIDParams }) {
       {
         courses:
           diplomas.length > 0
-            ? diplomas.map((diploma : DiplomaType) => ({
+            ? diplomas.map((diploma: DiplomaType) => ({
                 dipid: diploma.id,
                 name: diploma.name,
               }))
