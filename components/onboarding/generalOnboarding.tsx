@@ -21,7 +21,7 @@ type CohortType = {
   name: string;
 };
 
-export const PrevEducationSelection = ({
+export const GeneralOnboarding = ({
   onboarding,
   setOnboarding,
 }: OnboardingComponentProps) => {
