@@ -3,6 +3,11 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+type FacultyType = {
+  id: number;
+  name: string;
+};
+
 export async function GET(request: Request) {
   try {
     console.log("Called /faculty");
@@ -16,7 +21,18 @@ export async function GET(request: Request) {
     });
 
     // Return the fetched data as JSON
-    return NextResponse.json({ faculties: faculty }, { status: 200 });
+    return NextResponse.json(
+      {
+        faculties:
+          faculty.length > 0
+            ? faculty.map((fac: FacultyType) => ({
+                facid: fac.id,
+                name: fac.name,
+              }))
+            : [],
+      },
+      { status: 200 },
+    );
   } catch (error) {
     // Handle potential errors
     console.error("Failed to fetch faculty:", error);
