@@ -61,7 +61,10 @@ export const PolyOnboarding = ({
       onboarding.eduBackground != undefined &&
         onboarding.mathPrereq != undefined &&
         onboarding.poly != undefined &&
-        onboarding.diploma != undefined,
+        onboarding.diploma != undefined &&
+        onboarding.major != undefined &&
+        onboarding.cohort != undefined &&
+        onboarding.qet != undefined,
     );
   }, [onboarding]);
 

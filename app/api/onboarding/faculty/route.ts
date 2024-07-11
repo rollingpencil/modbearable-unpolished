@@ -3,12 +3,17 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+type FacultyType = {
+  id: number;
+  name: string;
+};
+
 export async function GET(request: Request) {
   try {
-    console.log("Called /poly");
+    console.log("Called /faculty");
     await prisma.$connect();
     // Fetch polytechnic data from the database
-    const polytechnics = await prisma.polytechnic.findMany({
+    const faculty = await prisma.faculty.findMany({
       select: {
         id: true,
         name: true,
@@ -16,10 +21,21 @@ export async function GET(request: Request) {
     });
 
     // Return the fetched data as JSON
-    return NextResponse.json({ poly: polytechnics }, { status: 200 });
+    return NextResponse.json(
+      {
+        faculties:
+          faculty.length > 0
+            ? faculty.map((fac: FacultyType) => ({
+                facid: fac.id,
+                name: fac.name,
+              }))
+            : [],
+      },
+      { status: 200 },
+    );
   } catch (error) {
     // Handle potential errors
-    console.error("Failed to fetch polytechnics:", error);
+    console.error("Failed to fetch faculty:", error);
 
     return NextResponse.json(
       { error: "Failed to fetch data from database." },

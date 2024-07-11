@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/button";
 
 import { redirectToPlanner } from "../actions";
 
-import { PrevEducationSelection } from "@/components/onboarding/previousEducationSelection";
+import { GeneralOnboarding } from "@/components/onboarding/generalOnboarding";
 import { NonPolyOnboarding } from "@/components/onboarding/nonPolyOnboarding";
 import { PolyOnboarding } from "@/components/onboarding/polyOnboarding";
 import { POLY_INSTITUDE_TAG } from "@/utils/feconst";
@@ -30,7 +30,7 @@ export default function OnboardingPage() {
   };
 
   return onboarding.eduBackground == null ? (
-    <PrevEducationSelection
+    <GeneralOnboarding
       onboarding={onboarding}
       setOnboarding={setOnboarding}
       setReady={setReady}
