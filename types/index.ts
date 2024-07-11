@@ -11,6 +11,7 @@ export type Onboarding = {
   diploma?: string | undefined;
   major?: number | undefined;
   cohort?: number | undefined;
+  qet?: number | undefined;
 };
 
 export interface OnboardingComponentProps {

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { subtitle } from "../primitives";
 
 import { InputElement, OnboardingComponentProps } from "@/types";
+import { QET_BAND } from "@/utils/feconst";
 
 type FacultyType = {
   facid: number;
@@ -57,6 +58,13 @@ export const GeneralOnboarding = ({
     setOnboarding({
       ...onboarding,
       eduBackground: (e.target as InputElement).value,
+    });
+  };
+
+  let setQETSelection = (e: PressEvent) => {
+    setOnboarding({
+      ...onboarding,
+      qet: Number((e.target as InputElement).value),
     });
   };
 
@@ -190,6 +198,31 @@ export const GeneralOnboarding = ({
               onPress={setPrevEduSelection}
             >
               {inst.name}
+            </Button>
+          ))}
+        </ButtonGroup>
+      </div>
+
+      <div className="inline-block max-w-lg text-left">
+        <h1 className={subtitle()}>
+          What is your Qualifying English Test(QET)?
+        </h1>
+      </div>
+
+      <div className="flex gap-10 w-4/5">
+        <ButtonGroup>
+          {QET_BAND.map((b) => (
+            <Button
+              key={b.id}
+              className="w-100"
+              color="primary"
+              fullWidth={true}
+              size="lg"
+              value={b.value}
+              variant="shadow"
+              onPress={setQETSelection}
+            >
+              {b.name}
             </Button>
           ))}
         </ButtonGroup>

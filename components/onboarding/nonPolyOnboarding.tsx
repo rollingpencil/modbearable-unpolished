@@ -29,7 +29,8 @@ export const NonPolyOnboarding = ({
       onboarding.eduBackground != undefined &&
         onboarding.mathPrereq != undefined &&
         onboarding.major != undefined &&
-        onboarding.cohort != undefined,
+        onboarding.cohort != undefined &&
+        onboarding.qet != undefined,
     );
   }, [onboarding]);
 

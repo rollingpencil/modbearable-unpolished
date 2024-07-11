@@ -63,7 +63,8 @@ export const PolyOnboarding = ({
         onboarding.poly != undefined &&
         onboarding.diploma != undefined &&
         onboarding.major != undefined &&
-        onboarding.cohort != undefined,
+        onboarding.cohort != undefined &&
+        onboarding.qet != undefined,
     );
   }, [onboarding]);
 
