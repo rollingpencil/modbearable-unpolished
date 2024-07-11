@@ -27,7 +27,9 @@ export const NonPolyOnboarding = ({
   useEffect(() => {
     setReady(
       onboarding.eduBackground != undefined &&
-        onboarding.mathPrereq != undefined,
+        onboarding.mathPrereq != undefined &&
+        onboarding.major != undefined &&
+        onboarding.cohort != undefined,
     );
   }, [onboarding]);
 

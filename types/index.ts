@@ -9,6 +9,8 @@ export type Onboarding = {
   mathPrereq?: boolean | undefined;
   poly?: string | undefined;
   diploma?: string | undefined;
+  major?: number | undefined;
+  cohort?: number | undefined;
 };
 
 export interface OnboardingComponentProps {
