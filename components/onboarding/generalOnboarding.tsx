@@ -181,29 +181,6 @@ export const GeneralOnboarding = ({
       )}
 
       <div className="inline-block max-w-lg text-left">
-        <h1 className={subtitle()}>What is your education background?</h1>
-      </div>
-
-      <div className="flex gap-10 w-4/5">
-        <ButtonGroup>
-          {instituteList.map((inst) => (
-            <Button
-              key={inst.instituteid}
-              className="w-100"
-              color="primary"
-              fullWidth={true}
-              size="lg"
-              value={inst.instituteid}
-              variant="shadow"
-              onPress={setPrevEduSelection}
-            >
-              {inst.name}
-            </Button>
-          ))}
-        </ButtonGroup>
-      </div>
-
-      <div className="inline-block max-w-lg text-left">
         <h1 className={subtitle()}>
           What is your Qualifying English Test(QET)?
         </h1>
@@ -223,6 +200,29 @@ export const GeneralOnboarding = ({
               onPress={setQETSelection}
             >
               {b.name}
+            </Button>
+          ))}
+        </ButtonGroup>
+      </div>
+
+      <div className="inline-block max-w-lg text-left">
+        <h1 className={subtitle()}>What is your education background?</h1>
+      </div>
+
+      <div className="flex gap-10 w-4/5">
+        <ButtonGroup>
+          {instituteList.map((inst) => (
+            <Button
+              key={inst.instituteid}
+              className="w-100"
+              color="primary"
+              fullWidth={true}
+              size="lg"
+              value={inst.instituteid}
+              variant="shadow"
+              onPress={setPrevEduSelection}
+            >
+              {inst.name}
             </Button>
           ))}
         </ButtonGroup>
