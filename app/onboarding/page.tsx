@@ -18,7 +18,13 @@ export default function OnboardingPage() {
   });
 
   let onSubmit = () => {
-    fetch("/api/onboarding/")
+    fetch("/api/onboarding/", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(onboarding),
+    })
       .then((res) => res.json())
       .then((data) => {
         // console.log(data);
