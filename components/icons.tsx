@@ -1,14 +1,11 @@
 import * as React from "react";
-
-import { IconSvgProps } from "@/types";
 import { Image } from "@nextui-org/react";
 
-export const Logo: React.FC<IconSvgProps> = ({
-  size = 36,
-  width,
-  height,
-  ...props
-}) => <Image width={size} alt="ModBearable Logo" src="./mb.png" {...props} />;
+import { IconSvgProps } from "@/types";
+
+export const Logo = () => (
+  <Image alt="ModBearable Logo" src="./mb.png" width={36} />
+);
 
 export const MoonFilledIcon = ({
   size = 24,
