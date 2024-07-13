@@ -138,6 +138,7 @@ export async function POST(request: Request) {
     // Return the fetched data as JSON
     return NextResponse.json(
       {
+        major: major_data?.name,
         total_cu: major_data?.totalCreditUnit,
         exempted_math: data.mathPrereq,
         base_requirements: base_req,
