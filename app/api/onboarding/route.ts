@@ -9,21 +9,8 @@ const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   console.log("Called /onboarding");
-  console.log(request);
   let data: Onboarding = await request.json();
 
-  console.log(data);
-  /*
-  {
-    eduBackground: 'poly',
-    major: 1,
-    cohort: 0,
-    qet: 1,
-    poly: 'sp',
-    diploma: 'S69',
-    mathPrereq: true
-  }
-  */
   if (!("eduBackground" in data)) {
     return NextResponse.json({ error: "Invalid data." }, { status: 400 });
   }
@@ -95,7 +82,6 @@ export async function POST(request: Request) {
     let apc_course_map = new Map(apc_course_db.map((c) => [c.code, c]));
 
     const base_req = base_req_db.map((record) => {
-
       let br_rec = {
         code: record.course.code,
         name: record.course.name,
