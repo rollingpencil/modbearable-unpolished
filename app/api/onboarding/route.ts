@@ -64,8 +64,6 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log(major_data);
-
     const base_req_db = await prisma.curriculum.findMany({
       where: {
         majorId: data.major,
@@ -77,8 +75,6 @@ export async function POST(request: Request) {
         wildcard: true,
       },
     });
-
-    console.log(base_req_db);
 
     let apc_course_db: Course[] = [];
 
@@ -96,20 +92,14 @@ export async function POST(request: Request) {
       ).map((rec) => rec.course);
     }
 
-    console.log(apc_course_db);
-
     let apc_course_map = new Map(apc_course_db.map((c) => [c.code, c]));
 
-    console.log(apc_course_map);
-
     const base_req = base_req_db.map((record) => {
-      console.log(
-        `${record.course.code}: ${apc_course_map.has(record.course.code)}`,
-      );
 
       let br_rec = {
-        course: record.course.code,
+        code: record.course.code,
         name: record.course.name,
+        courseType: record.type.name,
         credits: record.course.credit,
         exempted: apc_course_map.has(record.course.code),
         wildcard: record.wildcard,
@@ -119,12 +109,12 @@ export async function POST(request: Request) {
         apc_course_map.delete(record.course.code);
       }
 
-      if (br_rec.course == "MA1301") {
+      if (br_rec.code == "MA1301") {
         br_rec.exempted =
           data.mathPrereq != undefined ? data.mathPrereq : false;
       }
 
-      if (br_rec.course == "ES1000") {
+      if (br_rec.code == "ES1000") {
         switch (data.qet) {
           case 3:
           case 2:
@@ -136,7 +126,7 @@ export async function POST(request: Request) {
         }
       }
 
-      if (br_rec.course == "ES1103") {
+      if (br_rec.code == "ES1103") {
         switch (data.qet) {
           case 3:
             br_rec.exempted = true;
