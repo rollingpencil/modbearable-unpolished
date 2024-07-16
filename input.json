@@ -60,10 +60,10 @@
         "name": "Effective Communication for Computing Professionals",
         "courseType": "Core Foundation",
         "credits": 4,
-        "exempted": true,
+        "exempted": false,
         "wildcard": false,
         "add_prerequisites": [],
-        "take_together": []
+        "take_together": ["CS2103"]
       },
       {
         "code": "CS2103",
@@ -160,7 +160,7 @@
         "name": "Introductory Mathematics",
         "courseType": "UE",
         "credits": 4,
-        "exempted": true,
+        "exempted": false,
         "wildcard": false,
         "add_prerequisites": [],
         "take_together": []

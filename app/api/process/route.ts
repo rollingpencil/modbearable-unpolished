@@ -1,44 +1,56 @@
-import { NextResponse } from "next/server";
+import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
-import { promises as fs } from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
+import { NextResponse } from 'next/server';
 
-type PrereqTree = {
-  and?: (string | PrereqTree)[];
-  or?: (string | PrereqTree)[];
-};
+interface Course {
+  code: string;
+  name: string;
+  credits: number;
+  exempted: boolean;
+  courseType: string;
+  add_prerequisites: string[];
+  take_together: string[];
+}
 
-const fetchAndFilterPrerequisites = async (courseCode: string, exemptedCourses: string[], cohort: string) => {
+interface JSONData {
+  base_requirements: Course[];
+  cohort: string;
+}
+
+const fetchAndFilterPrerequisites = async (courseCode: string, courses: Course[], cohort: string) => {
   try {
     const response = await axios.get(`https://api.nusmods.com/v2/${cohort}/modules/${courseCode}.json`);
-    const prereqTree = response.data.prereqTree || "No prerequisites";
-    const semesterData = response.data.semesterData || [];
-    const fulfillRequirements = response.data.fulfillRequirements || [];
+    const prereqTree = response.data.prereqTree || {};
 
-    const filterPrerequisites = (prereq: any): string | PrereqTree | null => {
+    const courseCodes = courses.reduce((acc, course) => {
+      if (!course.exempted) acc[course.code] = true;  // Only include non-exempted courses
+      return acc;
+    }, {} as Record<string, boolean>);
+
+    const filterPrerequisites = (prereq: any): any => {
       if (typeof prereq === 'string') {
-        const code = prereq.split(':')[0];
-        return !exemptedCourses.includes(code) ? code : null;
+        const courseCode = prereq.split(':')[0];
+        return courseCodes[courseCode] ? courseCode : null;
       } else if (prereq.and) {
-        const filteredAnd = prereq.and.map(filterPrerequisites).filter(Boolean) as (string | PrereqTree)[];
-        return filteredAnd.length ? { and: filteredAnd } : null;
+        return { and: prereq.and.map(filterPrerequisites).filter(Boolean) };
       } else if (prereq.or) {
-        const filteredOr = prereq.or.map(filterPrerequisites).filter(Boolean) as (string | PrereqTree)[];
-        return filteredOr.length ? { or: filteredOr } : null;
+        return { or: prereq.or.map(filterPrerequisites).filter(Boolean) };
       }
       return null;
     };
 
     const filteredPrereqTree = filterPrerequisites(prereqTree);
-    const semestersOffered = semesterData.map((sem: any) => sem.semester);
+    const semestersOffered = response.data.semesterData.map((sem: { semester: any; }) => sem.semester);
 
     return {
-      prerequisites: filteredPrereqTree || [],
+      prerequisites: filteredPrereqTree,
       semestersOffered,
-      fulfillRequirements
+      fulfillRequirements: response.data.fulfillRequirements || []
     };
   } catch (error) {
-    console.error(`Error fetching prerequisites for ${courseCode}:`, error.message);
+    console.error(`Error fetching prerequisites for ${courseCode}:`, error instanceof Error ? error.message : error);
     return {
       prerequisites: "Error fetching prerequisites",
       semestersOffered: [],
@@ -47,137 +59,45 @@ const fetchAndFilterPrerequisites = async (courseCode: string, exemptedCourses: 
   }
 };
 
-const processJsonFile = async (jsonFilePath: string, fetchedJson: any) => {
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
-    //const data = await fs.readFile(jsonFilePath, 'utf8');
-    const data = await fs.readFile(process.cwd() + '/input.json', 'utf8');
-    //console.log(data);
-    const parsedData = JSON.parse(data);
+    const filePath = path.join(process.cwd(), 'input.json');
+    const fileData = await fs.readFile(filePath, 'utf8');
+    const jsonData: JSONData = JSON.parse(fileData);
 
-    const exemptedCourses = parsedData.base_requirements
-      .filter((course: any) => course.exempted)
-      .map((course: any) => course.course);
-    // continue from here
-    let studyPlan = fetchedJson.filter((course: any) => !exemptedCourses.includes(course.code));
+    const nonExemptCourses = jsonData.base_requirements.filter(course => !course.exempted);
+    const courseMap = nonExemptCourses.reduce((map, course) => {
+      map[course.code] = course;
+      return map;
+    }, {} as Record<string, Course>);
 
-    const updatedPrereqs = (prereq: any): string | PrereqTree | null => {
-      if (typeof prereq === 'string') {
-        const code = prereq.split(':')[0];
-        if (exemptedCourses.includes(code)) {
-          return null;
+    // Ensure bidirectional take_together relationships
+    nonExemptCourses.forEach(course => {
+      course.take_together.forEach(code => {
+        if (courseMap[code] && !courseMap[code].take_together.includes(course.code)) {
+          courseMap[code].take_together.push(course.code);
         }
-        return prereq;
-      } else if (prereq.and) {
-        const filteredAnd = prereq.and.map(updatedPrereqs).filter(Boolean) as (string | PrereqTree)[];
-        return filteredAnd.length ? { and: filteredAnd } : null;
-      } else if (prereq.or) {
-        const filteredOr = prereq.or.map(updatedPrereqs).filter(Boolean) as (string | PrereqTree)[];
-        return filteredOr.length ? { or: filteredOr } : null;
-      }
-      return null;
-    };
-
-    studyPlan = studyPlan.map((course: any) => {
-      course.prerequisites = updatedPrereqs(course.prerequisites) || [];
-      return course;
+      });
     });
 
-    for (const req of parsedData.base_requirements) {
-      if (req.exempted || req.wildcard) continue;
+    const studyPlan = await Promise.all(nonExemptCourses.map(async (course) => {
+      const prerequisitesInfo = await fetchAndFilterPrerequisites(
+        course.code,
+        jsonData.base_requirements,
+        jsonData.cohort
+      );
 
-      const existingCourse = studyPlan.find((course: any) => course.code === req.course);
-      if (existingCourse) {
-        existingCourse.name = req.name;
-        existingCourse.credits = req.credits;
+      return {
+        ...course,
+        prerequisites: prerequisitesInfo.prerequisites,
+        semestersOffered: prerequisitesInfo.semestersOffered,
+        fulfillRequirements: prerequisitesInfo.fulfillRequirements
+      };
+    }));
 
-        if (!Array.isArray(existingCourse.prerequisites)) {
-          existingCourse.prerequisites = existingCourse.prerequisites !== "No prerequisites" ? [existingCourse.prerequisites] : [];
-        }
-
-        req.add_prerequisites.forEach((prereq: any) => {
-          if (!exemptedCourses.includes(prereq) && !existingCourse.prerequisites.includes(prereq)) {
-            existingCourse.prerequisites.push(prereq);
-          }
-        });
-
-        if (req.take_together.length > 0) {
-          existingCourse.take_together = req.take_together;
-        }
-      } else {
-        try {
-          const { prerequisites, semestersOffered, fulfillRequirements } = await fetchAndFilterPrerequisites(req.course, exemptedCourses, parsedData.cohort);
-
-          let updatedPrerequisites = prerequisites;
-          if (!Array.isArray(updatedPrerequisites)) {
-            updatedPrerequisites = updatedPrerequisites !== "No prerequisites" ? [updatedPrerequisites] : [];
-          }
-
-          req.add_prerequisites.forEach((prereq: any) => {
-            if (!exemptedCourses.includes(prereq) && !updatedPrerequisites.includes(prereq)) {
-              updatedPrerequisites.push(prereq);
-            }
-          });
-
-          studyPlan.push({
-            code: req.course,
-            name: req.name,
-            credits: req.credits,
-            prerequisites: updatedPrerequisites.length > 0 ? updatedPrerequisites : [],
-            semestersOffered: semestersOffered || [],
-            fulfillRequirements: fulfillRequirements || [],
-            process: true,
-            take_together: req.take_together
-          });
-        } catch (error) {
-          studyPlan.push({
-            code: req.course,
-            name: req.name,
-            credits: req.credits,
-            prerequisites: [],
-            semestersOffered: [],
-            fulfillRequirements: [],
-            process: true,
-            take_together: req.take_together
-          });
-        }
-      }
-    }
-
-    studyPlan.forEach((course: any) => {
-      if (course.take_together && course.take_together.length > 0) {
-        course.take_together.forEach((togetherCourseCode: any) => {
-          const togetherCourse = studyPlan.find((c: any) => c.code === togetherCourseCode);
-          if (togetherCourse && !togetherCourse.take_together.includes(course.code)) {
-            togetherCourse.take_together.push(course.code);
-          }
-        });
-      }
-    });
-
-    return studyPlan;
+    return NextResponse.json(studyPlan);
   } catch (error) {
-    console.error('Error processing JSON file:', error.message);
-    return [];
+    console.error('Error processing JSON file:', error instanceof Error ? error.message : error);
+    return NextResponse.json({ error: 'Error processing JSON file' });
   }
-};
-
-export async function GET(request: Request) {
-  console.log("Called /api/process/route.ts");
-
-  
-    const file = await fs.readFile(process.cwd() + '/input.json', 'utf8');
-    //console.log(file);
-    const parsedData = JSON.parse(file);
-    //console.log(parsedData.cohort);
-    const response = await axios.get(`https://api.nusmods.com/v2/${parsedData.cohort}/moduleList.json`);
-    const fetchedJson = response.data;
-    //console.log(fetchedJson);
-    //fix this 
-    const studyPlan = await processJsonFile(file, fetchedJson);
-
-    //const filePath = path.join(process.cwd(), 'updated_study_plan.json');
-    //await fs.writeFile(filePath, JSON.stringify(studyPlan, null, 2));
-
-    return NextResponse.json({ status: 200 });
-  
 }
