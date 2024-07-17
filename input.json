@@ -132,7 +132,7 @@
         "credits": 4,
         "exempted": false,
         "wildcard": false,
-        "add_prerequisites": [],
+        "add_prerequisites": ["ES1103"],
         "take_together": []
       },
       {

@@ -9,9 +9,13 @@ interface Course {
   name: string;
   credits: number;
   exempted: boolean;
+  wildcard: boolean; 
   courseType: string;
   add_prerequisites: string[];
   take_together: string[];
+  prerequisites: any;  
+  semestersOffered: number[];
+  fulfillRequirements: string[];
 }
 
 interface JSONData {
@@ -30,6 +34,8 @@ const fetchAndFilterPrerequisites = async (courseCode: string, courses: Course[]
     }, {} as Record<string, boolean>);
 
     const filterPrerequisites = (prereq: any): any => {
+      
+
       if (typeof prereq === 'string') {
         const courseCode = prereq.split(':')[0];
         return courseCodes[courseCode] ? courseCode : null;
@@ -52,7 +58,7 @@ const fetchAndFilterPrerequisites = async (courseCode: string, courses: Course[]
   } catch (error) {
     console.error(`Error fetching prerequisites for ${courseCode}:`, error instanceof Error ? error.message : error);
     return {
-      prerequisites: "Error fetching prerequisites",
+      prerequisites: [],
       semestersOffered: [],
       fulfillRequirements: []
     };
@@ -86,18 +92,50 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
         jsonData.base_requirements,
         jsonData.cohort
       );
+      
+      // Handle manual prerequisites
+      const manualPrerequisites = course.add_prerequisites.filter(prereqCode => courseMap[prereqCode]);
 
-      return {
-        ...course,
-        prerequisites: prerequisitesInfo.prerequisites,
-        semestersOffered: prerequisitesInfo.semestersOffered,
-        fulfillRequirements: prerequisitesInfo.fulfillRequirements
-      };
+      if (manualPrerequisites.length === 0){
+        //console.log(prerequisitesInfo.prerequisites);
+        return {
+          ...course,
+          prerequisites: {
+            ...prerequisitesInfo.prerequisites,
+             
+          },
+          semestersOffered: prerequisitesInfo.semestersOffered,
+          fulfillRequirements: prerequisitesInfo.fulfillRequirements
+        }; 
+      } else {
+        if (prerequisitesInfo.prerequisites === null){
+          prerequisitesInfo.prerequisites = manualPrerequisites;
+        }
+        return {
+          ...course,
+          prerequisites: {
+            ...prerequisitesInfo.prerequisites,
+             
+            
+          },
+          semestersOffered: prerequisitesInfo.semestersOffered,
+          fulfillRequirements: prerequisitesInfo.fulfillRequirements
+        };
+      }
+      
     }));
-
-    return NextResponse.json(studyPlan);
+    const filteredCourses = studyPlan.map(({
+      exempted, 
+      wildcard, 
+      add_prerequisites, 
+      take_together, 
+      ...course 
+    }) => course);
+    
+    //console.log(filteredCourses);
+    return NextResponse.json(filteredCourses, { status: 200 });
   } catch (error) {
     console.error('Error processing JSON file:', error instanceof Error ? error.message : error);
-    return NextResponse.json({ error: 'Error processing JSON file' });
+    return NextResponse.json({ error: 'Error processing JSON file' } ,{ status: 500 });
   }
 }
