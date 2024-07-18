@@ -24,7 +24,7 @@ export interface InputElement extends Element {
   value: string;
 }
 
-export type CourseInfo = {
+export type PlannerCourseType = {
   code: string;
   name: string;
   courseType: string;
@@ -32,3 +32,20 @@ export type CourseInfo = {
   exempted: boolean;
   wildcard: boolean;
 };
+
+export type PlannerUserScheduleSemesterType = {
+  order: number;
+  name: String;
+  courses: string[];
+  mark_complete: boolean;
+}
+
+export type PlanarDataType = {
+  major: string;
+  total_cu: number;
+  exempted_math: true;
+  base_requirements: PlannerCourseType[];
+  non_base_exemptions: PlannerCourseType[];
+  user_defined_courses: PlannerCourseType[];
+  user_schedule: PlannerUserScheduleSemesterType[];
+}
