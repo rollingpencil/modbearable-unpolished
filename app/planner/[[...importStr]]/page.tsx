@@ -5,14 +5,18 @@ import { useEffect, useState } from "react";
 
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
+import { PlanarDataType, PlannerCourseType } from "@/types";
 
 export default function PlannerPage({
   params,
 }: {
   params: { importStr: string };
 }) {
-  const [data, setData] = useState(null);
-  const [courseHashmap, setCourseHashmap] = useState(null);
+  const [data, setData] = useState<PlanarDataType | null>(null);
+  const [courseHashmap, setCourseHashmap] = useState<Map<
+    string,
+    PlannerCourseType
+  > | null>(null);
   const [parent, setParent] = useState(null);
 
   useEffect(() => {
