@@ -20,8 +20,8 @@ export default function PlannerPage({
       if ("importStr" in params) {
         console.log(`From URL | ${params.importStr[0]}`);
         const importString = params.importStr[0];
-
-        setData(JSON.parse(atob(importString)));
+        const importStringDecoded = decodeURIComponent(importString);
+        setData(JSON.parse(atob(importStringDecoded)));
       } else {
         // localStorage.getItem("data", btoa(JSON.stringify(data)));
         let localStorageData = localStorage.getItem("data");
@@ -29,7 +29,7 @@ export default function PlannerPage({
         if (localStorageData == null) {
           localStorageData = "";
         }
-        console.log(`From localStorage | ${localStorageData}}`);
+        console.log(`From localStorage | ${localStorageData}`);
         setData(JSON.parse(atob(localStorageData)));
       }
     }
