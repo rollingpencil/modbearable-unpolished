@@ -23,3 +23,12 @@ export interface OnboardingComponentProps {
 export interface InputElement extends Element {
   value: string;
 }
+
+export type CourseInfo = {
+  code: string;
+  name: string;
+  courseType: string;
+  credits: number;
+  exempted: boolean;
+  wildcard: boolean;
+};
