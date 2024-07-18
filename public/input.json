@@ -120,7 +120,7 @@
         "name": "English for Academic Purposes",
         "courseType": "UE",
         "credits": 4,
-        "exempted": true,
+        "exempted": false,
         "wildcard": false,
         "add_prerequisites": [],
         "take_together": []
