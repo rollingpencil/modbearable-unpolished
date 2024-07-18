@@ -67,7 +67,7 @@ export default function PlannerPage({
         <h1 className={title()}>Planner</h1>
       </div>
       <DndContext>
-        <div className="flex w-full h-svh overflow-x-scroll flex-1">
+        <div className="flex w-full h-svh overflow-x-auto flex-1">
           {data == null || courseHashmap == null ? (
             <></>
           ) : (
