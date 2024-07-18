@@ -35,7 +35,7 @@ export type PlannerCourseType = {
 
 export type PlannerUserScheduleSemesterType = {
   order: number;
-  name: String;
+  name: string;
   courses: string[];
   mark_complete: boolean;
 }
