@@ -1,4 +1,11 @@
-import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Chip,
+  Divider,
+} from "@nextui-org/react";
 
 import { PlannerCourseType } from "@/types";
 
@@ -19,6 +26,15 @@ export const CourseCard = ({ courseInfo }: courseCardType) => {
         <p className="text-lg">{courseInfo.name}</p>
         <p className="text-md">{courseInfo.credits} Credits</p>
       </CardBody>
+      <CardFooter>
+        {courseInfo.exempted ? (
+          <Chip color="default" variant="flat">
+            Exempted
+          </Chip>
+        ) : (
+          <></>
+        )}
+      </CardFooter>
     </Card>
   );
 };
