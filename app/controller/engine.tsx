@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { convertToDict, generateSchedule, topologicalSort } from "./algorithm";
 interface Course {
   code: string;
   name: string;
@@ -20,6 +20,7 @@ interface JSONData {
 }
 
 interface OutputCourse {
+  take_together: string[];
   code: string;
   name: string;
   credits: number;
@@ -27,19 +28,24 @@ interface OutputCourse {
   prerequisites: any;
   semestersOffered: number[];
   fulfillRequirements: string[];
-  //taketogether: string[];
 }
-// Helper function to perform topological sort
-function topologicalSort(
-  courses: OutputCourse[],
-  courseMap: Record<string, OutputCourse>,
-) {
-  //TODO: topo sort helper
 
-  return [];
+interface Courses {
+  course: string;
+  department: string;
+  name: string;
+  dependencies: string[][];
+  credits: number;
+  courseType: string;
+  fulfillRequirements: string[];
+  semestersOffered: number[];
+  take_together: string[];
 }
+
+type CourseDicts = { [key: string]: Courses };
 
 const fetchAndFilterPrerequisites = async (
+  wildcard: boolean,
   courseCode: string,
   courses: Course[],
   cohort: string,
@@ -71,7 +77,9 @@ const fetchAndFilterPrerequisites = async (
     };
 
     const filteredPrereqTree = filterPrerequisites(prereqTree);
-    const semestersOffered = response.data.semesterData.map(
+    let semestersOffered = null;
+
+    semestersOffered = response.data.semesterData.map(
       (sem: { semester: any }) => sem.semester,
     );
 
@@ -120,6 +128,7 @@ const processJsonData = async (jsonData: JSONData) => {
     const studyPlan = await Promise.all(
       nonExemptCourses.map(async (course) => {
         const prerequisitesInfo = await fetchAndFilterPrerequisites(
+          course.wildcard,
           course.code,
           jsonData.base_requirements,
           jsonData.cohort,
@@ -131,7 +140,6 @@ const processJsonData = async (jsonData: JSONData) => {
         );
 
         if (manualPrerequisites.length === 0) {
-          //console.log(prerequisitesInfo.prerequisites);
           return {
             ...course,
             prerequisites: {
@@ -155,18 +163,26 @@ const processJsonData = async (jsonData: JSONData) => {
         }
       }),
     );
-    const filteredCourses = studyPlan.map(
-      ({ exempted, wildcard, add_prerequisites, ...course }) => course,
-    );
+
     const planner = (courses: OutputCourse[]): OutputCourse[][] => {
-      // TODO: Implement actual planning logic
+      //TODO: TOPO SORT
+      const filteredCourses = studyPlan.map(
+        ({ exempted, wildcard, add_prerequisites, ...course }) => course,
+      );
+
+      const courseDict: CourseDicts = convertToDict(filteredCourses);
+
+      // Perform topological sort
+      const sortedCourses = topologicalSort(courseDict);
+      console.log("Topologically sorted courses:", sortedCourses);
+
+      // Generate schedule
+      const maxCredit = 20;
+      const schedule = generateSchedule(courseDict, maxCredit);
+      console.log("Generated schedule:", schedule);
       return [courses];
     };
-
-    const study_schedule = planner(filteredCourses);
-    //console.log("schedule");
-    console.log(study_schedule);
-    //console.log("end");
+    const study_schedule = planner(studyPlan);
 
     return study_schedule;
   } catch (error) {
