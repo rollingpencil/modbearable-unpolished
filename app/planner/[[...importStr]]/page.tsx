@@ -2,7 +2,7 @@
 
 import { DndContext } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
-
+import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
@@ -53,6 +53,20 @@ export default function PlannerPage({
     }
   }, [data]);
 
+  const handleValidate = (event: any) => {};
+  const handleSchedule = (event: any) => {
+    if (data != null) {
+      try {
+        processJsonData(data);
+      } catch (error) {
+        console.error("Error generating study schedule:", error);
+      }
+    } else {
+      console.log("missing data");
+    }
+  };
+
+  handleSchedule(data);
   const handleDragEnd = (event: any) => {
     const { over } = event;
 
@@ -60,7 +74,7 @@ export default function PlannerPage({
     // otherwise reset the parent to `null`
     setParent(over ? over.id : null);
   };
-
+  //handleSchedule(data);
   return (
     <>
       <div className="inline-block max-w-lg text-center justify-center">
