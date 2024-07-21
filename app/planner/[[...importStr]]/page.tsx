@@ -1,5 +1,6 @@
 "use client";
 
+import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
 
 import { processJsonData } from "@/controller/engine";
@@ -62,25 +63,61 @@ export default function PlannerPage({
     }
   }, [data, status]);
 
+  const handleDragOver = (event: any) => {
+    const { source, target } = event.operation;
+    console.log(event.operation.status);
+    if (source && target) {
+      const srcSem: number = source.sortable.group;
+      const srcSemIdx: number = source.sortable.index;
+      const course: string = source.id;
+
+      let destSem: number = -1;
+      let destSemIdx: number = -1;
+
+      if ("sortable" in target) {
+        destSem = target.sortable.group;
+        destSemIdx = target.sortable.index;
+      } else {
+        destSem = target.id;
+        destSemIdx = 0;
+      }
+
+      let modifiedUserSchedule = data!.user_schedule;
+
+      for (let sem of modifiedUserSchedule) {
+        if (sem.order == srcSem) {
+          sem.courses.splice(srcSemIdx, 1);
+        }
+        if (sem.order == destSem) {
+          sem.courses.splice(destSemIdx, 0, course);
+        }
+      }
+      setData({ user_schedule: modifiedUserSchedule, ...data });
+    }
+  };
+
   return (
     <>
       <div className="inline-block max-w-lg text-center justify-center">
         <h1 className={title()}>Planner</h1>
       </div>
+
       <div className="flex w-full h-svh overflow-x-auto flex-1">
-        {data == null || courseHashmap == null ? (
-          <></>
-        ) : (
-          data.user_schedule.map((sem) => {
-            return (
-              <SemesterCard
-                key={sem.order}
-                refmap={courseHashmap}
-                semester={sem}
-              />
-            );
-          })
-        )}
+        <DragDropProvider onDragOver={handleDragOver}>
+          {data == null || courseHashmap == null ? (
+            <></>
+          ) : (
+            data.user_schedule.map((sem) => {
+              return (
+                <SemesterCard
+                  key={sem.order}
+                  refmap={courseHashmap}
+                  semester={sem}
+                />
+              );
+            })
+          )}
+        </DragDropProvider>
       </div>
     </>
   );

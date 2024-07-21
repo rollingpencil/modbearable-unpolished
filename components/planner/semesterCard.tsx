@@ -1,4 +1,6 @@
 import { Listbox, ListboxItem } from "@nextui-org/react";
+import { useDroppable } from "@dnd-kit/react";
+import { CollisionPriority } from "@dnd-kit/abstract";
 
 import { CourseCard } from "./courseCard";
 
@@ -21,10 +23,17 @@ let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
 };
 
 export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
+  const { ref: dropRef } = useDroppable({
+    id: semester.order,
+    type: "semester",
+    accept: ["course"],
+    collisionPriority: CollisionPriority.Low,
+  });
+
   return (
-    <div className="w-1/5 min-w-fit h-full px-1">
+    <div className="w-1/5 min-w-72 h-full px-2">
       <h3 className="text-2xl px-3">{semester.name}</h3>
-      <Listbox aria-label="" className="flex-1 overflow-y-auto ">
+      <div ref={dropRef} className="flex-1 overflow-y-auto h-full">
         {refmap == null ? (
           <></>
         ) : (
@@ -40,13 +49,16 @@ export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
             }
 
             return (
-              <ListboxItem key={courseCode}>
-                <CourseCard courseInfo={augmentedCourse} />
-              </ListboxItem>
+              <CourseCard
+                key={courseCode}
+                courseInfo={augmentedCourse}
+                index={semester.courses.indexOf(courseCode)}
+                semOrder={semester.order}
+              />
             );
           })
         )}
-      </Listbox>
+      </div>
     </div>
   );
 };
