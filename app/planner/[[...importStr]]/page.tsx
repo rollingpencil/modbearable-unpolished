@@ -67,6 +67,7 @@ export default function PlannerPage({
   };
 
   handleSchedule(data);
+  console.log("DATA: ", data);
   const handleDragEnd = (event: any) => {
     const { over } = event;
 

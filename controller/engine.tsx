@@ -35,12 +35,12 @@ const fetchAndFilterPrerequisites = async (
   courseCode: string,
   courses: Course[],
   cohort: string,
+  wildcard: boolean,
 ) => {
   try {
-    const courseData = await retrieveSpecificMods(cohort, courseCode);
+    const courseData = await retrieveSpecificMods(cohort, courseCode, wildcard);
 
     const prereqTree = courseData.prereqTree || {};
-
     const courseCodes = courses.reduce(
       (acc, course) => {
         if (!course.exempted) acc[course.code] = true; // Only include non-exempted courses
@@ -94,19 +94,25 @@ const processCourseData = async (
     course.code,
     allCourses,
     cohort,
+    course.wildcard,
   );
 
   // Handle manual prerequisites
   const manualPrerequisites = course.add_prerequisites.filter(
-    (prereqCode) => courseMap[prereqCode],
+    (prereqCode) => courseMap[prereqCode] && !courseMap[prereqCode].exempted,
   );
-
   if (manualPrerequisites.length === 0) {
+    let formattedPrerequisites;
+    if (typeof prerequisitesInfo.prerequisites === "object") {
+      formattedPrerequisites = prerequisitesInfo.prerequisites;
+    } else if (typeof prerequisitesInfo.prerequisites === "string") {
+      formattedPrerequisites = {
+        "0": prerequisitesInfo.prerequisites,
+      };
+    }
     return {
       ...course,
-      prerequisites: {
-        ...prerequisitesInfo.prerequisites,
-      },
+      prerequisites: formattedPrerequisites,
       semestersOffered: prerequisitesInfo.semestersOffered,
       fulfillRequirements: prerequisitesInfo.fulfillRequirements,
     };
@@ -114,6 +120,7 @@ const processCourseData = async (
     if (prerequisitesInfo.prerequisites === null) {
       prerequisitesInfo.prerequisites = manualPrerequisites;
     }
+
     return {
       ...course,
       prerequisites: {
