@@ -1,35 +1,5 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
-
-interface Course {
-  code: string;
-  name: string;
-  credits: number;
-  exempted: boolean;
-  wildcard: boolean;
-  courseType: string;
-  add_prerequisites: string[];
-  take_together: string[];
-  prerequisites: any;
-  semestersOffered: number[];
-  fulfillRequirements: string[];
-}
-
-interface JSONData {
-  base_requirements: Course[];
-  non_base_exemptions: Course[];
-  user_defined_courses: Course[];
-  cohort: string;
-}
-
-interface OutputCourse {
-  code: string;
-  name: string;
-  credits: number;
-  courseType: string;
-  prerequisites: any;
-  semestersOffered: number[];
-  fulfillRequirements: string[];
-}
+import { Course, JSONData, OutputCourse } from "@/types/";
 
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
@@ -186,6 +156,7 @@ const processJsonData = async (jsonData: JSONData) => {
     jsonData.base_requirements = updatedBaseRequirements;
     jsonData.non_base_exemptions = updatedNonBaseExemptions;
     jsonData.user_defined_courses = updatedUserDefinedCourses;
+    return jsonData;
   } catch (error) {
     console.error(
       "Error processing JSON data:",
