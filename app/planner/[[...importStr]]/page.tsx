@@ -12,6 +12,7 @@ export default function PlannerPage({
 }: {
   params: { importStr: string };
 }) {
+  const [status, setStatus] = useState(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
   const [courseHashmap, setCourseHashmap] = useState<Map<
     string,
@@ -38,7 +39,6 @@ export default function PlannerPage({
       }
     }
   }, [data]);
-
   useEffect(() => {
     if (data != null) {
       let masterCourseList = data.base_requirements.concat(
@@ -52,20 +52,14 @@ export default function PlannerPage({
       setCourseHashmap(masterCourseHashmap);
     }
   }, [data]);
-
   const handleValidate = (event: any) => {};
-  const handleSchedule = (event: any) => {
-    if (data != null) {
-      try {
-        processJsonData(data);
-      } catch (error) {
-        console.error("Error generating study schedule:", error);
-      }
-    } else {
-      console.log("missing data");
+  const handleSchedule = (event: any) => {};
+  useEffect(() => {
+    if (data != null && status == false) {
+      processJsonData(data);
+      setStatus(true);
     }
-  };
-  handleSchedule(data);
+  }, [data, status]);
   const handleDragEnd = (event: any) => {
     const { over } = event;
 
