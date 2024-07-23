@@ -65,9 +65,7 @@ export default function PlannerPage({
       console.log("missing data");
     }
   };
-
   handleSchedule(data);
-  console.log("DATA: ", data);
   const handleDragEnd = (event: any) => {
     const { over } = event;
 
