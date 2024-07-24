@@ -8,6 +8,7 @@ import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
 import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
+import { AddCourseModal } from "@/components/planner/modalCourseAdd";
 
 export default function PlannerPage({
   params,
@@ -110,7 +111,14 @@ export default function PlannerPage({
         {data == null || courseHashmap == null ? (
           <></>
         ) : (
-          <AddSemesterModal data={data} setData={setData} />
+          <>
+            <AddSemesterModal data={data} setData={setData} />
+            <AddCourseModal
+              data={data}
+              setData={setData}
+              setUpToDate={setStatus}
+            />
+          </>
         )}
       </div>
 
