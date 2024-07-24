@@ -34,6 +34,7 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
 
       modifiedUserSchedule.push(newSemester);
       setData({ ...data, user_schedule: modifiedUserSchedule });
+      setSemName(undefined);
       onClose();
     }
   };
@@ -67,6 +68,7 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
                 <Input
                   isClearable
                   isRequired
+                  defaultValue=""
                   label="Name"
                   placeholder="Semester XX"
                   variant="bordered"
