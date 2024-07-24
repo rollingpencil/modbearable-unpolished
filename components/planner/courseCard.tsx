@@ -27,17 +27,19 @@ export const CourseCard = ({ courseInfo, semOrder, index }: courseCardType) => {
 
   return (
     <Card ref={ref} className="bg-amber-500 text-white my-3 w-full" shadow="lg">
-      <CardHeader className="flex gap-3">
+      <CardHeader className="flex gap-3 pb-0">
         <div className="flex flex-col">
           <p className="text-lg">{courseInfo.code}</p>
         </div>
       </CardHeader>
-      <Divider />
-      <CardBody>
-        <p className="text-lg">{courseInfo.name}</p>
-        <p className="text-md">{courseInfo.credits} Credits</p>
+      <CardBody className="px-3 py-1">
+        <p className="text-md">{courseInfo.name}</p>
       </CardBody>
+      <Divider />
       <CardFooter>
+        <Chip className="m-1" color="default" variant="solid">
+          {courseInfo.credits} Credits
+        </Chip>
         {courseInfo.exempted ? (
           <Chip color="default" variant="flat">
             Exempted
