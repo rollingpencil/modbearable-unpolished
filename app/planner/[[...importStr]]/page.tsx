@@ -1,6 +1,5 @@
 "use client";
 
-import { DndContext } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
 import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
@@ -18,7 +17,6 @@ export default function PlannerPage({
     string,
     PlannerCourseType
   > | null>(null);
-  const [parent, setParent] = useState(null);
 
   useEffect(() => {
     if (data == null) {
@@ -54,42 +52,34 @@ export default function PlannerPage({
   }, [data]);
   const handleValidate = (event: any) => {};
   const handleSchedule = (event: any) => {};
+
   useEffect(() => {
     if (data != null && status == false) {
       processJsonData(data);
       setStatus(true);
     }
   }, [data, status]);
-  const handleDragEnd = (event: any) => {
-    const { over } = event;
 
-    // If the item is dropped over a container, set it as the parent
-    // otherwise reset the parent to `null`
-    setParent(over ? over.id : null);
-  };
-  //handleSchedule(data);
   return (
     <>
       <div className="inline-block max-w-lg text-center justify-center">
         <h1 className={title()}>Planner</h1>
       </div>
-      <DndContext>
-        <div className="flex w-full h-svh overflow-x-auto flex-1">
-          {data == null || courseHashmap == null ? (
-            <></>
-          ) : (
-            data.user_schedule.map((sem) => {
-              return (
-                <SemesterCard
-                  key={sem.order}
-                  refmap={courseHashmap}
-                  semester={sem}
-                />
-              );
-            })
-          )}
-        </div>
-      </DndContext>
+      <div className="flex w-full h-svh overflow-x-auto flex-1">
+        {data == null || courseHashmap == null ? (
+          <></>
+        ) : (
+          data.user_schedule.map((sem) => {
+            return (
+              <SemesterCard
+                key={sem.order}
+                refmap={courseHashmap}
+                semester={sem}
+              />
+            );
+          })
+        )}
+      </div>
     </>
   );
 }
