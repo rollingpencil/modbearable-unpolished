@@ -65,7 +65,7 @@ export default function PlannerPage({
 
   const handleDragOver = (event: any) => {
     const { source, target } = event.operation;
-    console.log(event.operation.status);
+
     if (source && target) {
       const srcSem: number = source.sortable.group;
       const srcSemIdx: number = source.sortable.index;

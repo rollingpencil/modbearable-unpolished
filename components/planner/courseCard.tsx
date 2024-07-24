@@ -5,8 +5,6 @@ import {
   CardHeader,
   Chip,
   Divider,
-  ListboxItem,
-  ListboxItemProps,
 } from "@nextui-org/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 
