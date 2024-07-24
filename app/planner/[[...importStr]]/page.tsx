@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
@@ -24,6 +25,7 @@ export default function PlannerPage({
         console.log(`From URL | ${params.importStr[0]}`);
         const importString = params.importStr[0];
         const importStringDecoded = decodeURIComponent(importString);
+
         setData(JSON.parse(atob(importStringDecoded)));
       } else {
         // localStorage.getItem("data", btoa(JSON.stringify(data)));

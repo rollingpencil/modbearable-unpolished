@@ -14,6 +14,7 @@ const fetchAndFilterPrerequisites = async (
     const courseCodes = courses.reduce(
       (acc, course) => {
         if (!course.exempted) acc[course.code] = true; // Only include non-exempted courses
+
         return acc;
       },
       {} as Record<string, boolean>,
@@ -22,12 +23,14 @@ const fetchAndFilterPrerequisites = async (
     const filterPrerequisites = (prereq: any): any => {
       if (typeof prereq === "string") {
         const courseCode = prereq.split(":")[0];
+
         return courseCodes[courseCode] ? courseCode : null;
       } else if (prereq.and) {
         return { and: prereq.and.map(filterPrerequisites).filter(Boolean) };
       } else if (prereq.or) {
         return { or: prereq.or.map(filterPrerequisites).filter(Boolean) };
       }
+
       return null;
     };
 
@@ -46,6 +49,7 @@ const fetchAndFilterPrerequisites = async (
       `Error fetching prerequisites for ${courseCode}:`,
       error instanceof Error ? error.message : error,
     );
+
     return {
       prerequisites: [],
       semestersOffered: [],
@@ -71,8 +75,10 @@ const processCourseData = async (
   const manualPrerequisites = course.add_prerequisites.filter(
     (prereqCode) => courseMap[prereqCode] && !courseMap[prereqCode].exempted,
   );
+
   if (manualPrerequisites.length === 0) {
     let formattedPrerequisites;
+
     if (typeof prerequisitesInfo.prerequisites === "object") {
       formattedPrerequisites = prerequisitesInfo.prerequisites;
     } else if (typeof prerequisitesInfo.prerequisites === "string") {
@@ -80,6 +86,7 @@ const processCourseData = async (
         "0": prerequisitesInfo.prerequisites,
       };
     }
+
     return {
       ...course,
       prerequisites: formattedPrerequisites,
@@ -117,6 +124,7 @@ const processJsonData = async (jsonData: JSONData) => {
     const courseMap = allCourses.reduce(
       (map, course) => {
         map[course.code] = course;
+
         return map;
       },
       {} as Record<string, Course>,
@@ -156,12 +164,14 @@ const processJsonData = async (jsonData: JSONData) => {
     jsonData.base_requirements = updatedBaseRequirements;
     jsonData.non_base_exemptions = updatedNonBaseExemptions;
     jsonData.user_defined_courses = updatedUserDefinedCourses;
+
     return jsonData;
   } catch (error) {
     console.error(
       "Error processing JSON data:",
       error instanceof Error ? error.message : error,
     );
+
     return [];
   }
 };

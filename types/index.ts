@@ -38,7 +38,7 @@ export type PlannerUserScheduleSemesterType = {
   name: string;
   courses: string[];
   mark_complete: boolean;
-}
+};
 
 export type PlanarDataType = {
   major: string;
@@ -48,7 +48,7 @@ export type PlanarDataType = {
   non_base_exemptions: PlannerCourseType[];
   user_defined_courses: PlannerCourseType[];
   user_schedule: PlannerUserScheduleSemesterType[];
-}
+};
 
 export type Course = {
   code: string;
@@ -62,14 +62,14 @@ export type Course = {
   prerequisites: any;
   semestersOffered: number[];
   fulfillRequirements: string[];
-}
+};
 
 export type JSONData = {
   base_requirements: Course[];
   non_base_exemptions: Course[];
   user_defined_courses: Course[];
   cohort: string;
-}
+};
 
 export type OutputCourse = {
   code: string;
@@ -79,4 +79,4 @@ export type OutputCourse = {
   prerequisites: any;
   semestersOffered: number[];
   fulfillRequirements: string[];
-}
+};
