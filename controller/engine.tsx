@@ -1,9 +1,9 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
-import { Course, JSONData, OutputCourse } from "@/types/";
+import { PlannerCourseType, PlanarDataType } from "@/types/";
 
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
-  courses: Course[],
+  courses: PlannerCourseType[],
   cohort: string,
   wildcard: boolean,
 ) => {
@@ -59,10 +59,10 @@ const fetchAndFilterPrerequisites = async (
 };
 
 const processCourseData = async (
-  course: Course,
-  allCourses: Course[],
+  course: PlannerCourseType,
+  allCourses: PlannerCourseType[],
   cohort: string,
-  courseMap: Record<string, Course>,
+  courseMap: Record<string, PlannerCourseType>,
 ) => {
   const prerequisitesInfo = await fetchAndFilterPrerequisites(
     course.code,
@@ -109,10 +109,20 @@ const processCourseData = async (
   }
 };
 // method signature for future implementation
-const scheduleCourse = async (jsonData: JSONData) => {};
-const dependencyCheck = async (jsonData: JSONData) => {};
+const scheduleCourse = async (
+  jsonData: PlanarDataType,
+  setData: Function,
+) => {};
+const dependencyCheck = async (
+  jsonData: PlanarDataType,
+  setData: Function,
+) => {};
 
-const processJsonData = async (jsonData: JSONData) => {
+export const processJsonData = async (
+  jsonData: PlanarDataType,
+  setData: Function,
+) => {
+  console.log("Populating Prerequisite Data");
   try {
     // Combine all courses
     const allCourses = [
@@ -127,7 +137,7 @@ const processJsonData = async (jsonData: JSONData) => {
 
         return map;
       },
-      {} as Record<string, Course>,
+      {} as Record<string, PlannerCourseType>,
     );
 
     // Ensure bidirectional take_together relationships
@@ -165,16 +175,11 @@ const processJsonData = async (jsonData: JSONData) => {
     jsonData.non_base_exemptions = updatedNonBaseExemptions;
     jsonData.user_defined_courses = updatedUserDefinedCourses;
 
-    return jsonData;
+    setData(jsonData);
   } catch (error) {
     console.error(
       "Error processing JSON data:",
       error instanceof Error ? error.message : error,
     );
-
-    return [];
   }
 };
-
-export { processJsonData };
-export type { JSONData, Course, OutputCourse };

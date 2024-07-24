@@ -31,6 +31,11 @@ export type PlannerCourseType = {
   credits: number;
   exempted: boolean;
   wildcard: boolean;
+  add_prerequisites: string[];
+  take_together: string[];
+  prerequisites?: any | null;
+  semestersOffered?: number[];
+  fulfillRequirements?: string[];
 };
 
 export type PlannerUserScheduleSemesterType = {
@@ -42,41 +47,11 @@ export type PlannerUserScheduleSemesterType = {
 
 export type PlanarDataType = {
   major: string;
+  cohort: string;
   total_cu: number;
   exempted_math: true;
   base_requirements: PlannerCourseType[];
   non_base_exemptions: PlannerCourseType[];
   user_defined_courses: PlannerCourseType[];
   user_schedule: PlannerUserScheduleSemesterType[];
-};
-
-export type Course = {
-  code: string;
-  name: string;
-  credits: number;
-  exempted: boolean;
-  wildcard: boolean;
-  courseType: string;
-  add_prerequisites: string[];
-  take_together: string[];
-  prerequisites: any;
-  semestersOffered: number[];
-  fulfillRequirements: string[];
-};
-
-export type JSONData = {
-  base_requirements: Course[];
-  non_base_exemptions: Course[];
-  user_defined_courses: Course[];
-  cohort: string;
-};
-
-export type OutputCourse = {
-  code: string;
-  name: string;
-  credits: number;
-  courseType: string;
-  prerequisites: any;
-  semestersOffered: number[];
-  fulfillRequirements: string[];
 };

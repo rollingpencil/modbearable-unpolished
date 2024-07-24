@@ -57,7 +57,7 @@ export default function PlannerPage({
 
   useEffect(() => {
     if (data != null && status == false) {
-      processJsonData(data);
+      processJsonData(data, setData);
       setStatus(true);
     }
   }, [data, status]);

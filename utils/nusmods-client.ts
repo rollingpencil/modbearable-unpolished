@@ -14,7 +14,9 @@ export const retrieveSpecificMods = async (
     // Handle the case where wildcard is true
     return baseResponse;
   } else {
-    fetch(`https://api.nusmods.com/v2/${cohort}/modules/${courseCode}.json`)
+    await fetch(
+      `https://api.nusmods.com/v2/${cohort}/modules/${courseCode}.json`,
+    )
       .then((res) => res.json())
       .then((data) => {
         baseResponse = data;
