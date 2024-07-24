@@ -16,6 +16,8 @@ let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
   credits: 0,
   exempted: true,
   wildcard: false,
+  add_prerequisites: [],
+  take_together: [],
 };
 
 export const SemesterCard = ({ refmap, semester }: semesterCardType) => {

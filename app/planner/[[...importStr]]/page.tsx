@@ -1,8 +1,8 @@
 "use client";
 
-import { DndContext } from "@dnd-kit/core";
 import { useEffect, useState } from "react";
 
+import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
@@ -12,12 +12,12 @@ export default function PlannerPage({
 }: {
   params: { importStr: string };
 }) {
+  const [status, setStatus] = useState(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
   const [courseHashmap, setCourseHashmap] = useState<Map<
     string,
     PlannerCourseType
   > | null>(null);
-  const [parent, setParent] = useState(null);
 
   useEffect(() => {
     if (data == null) {
@@ -25,6 +25,7 @@ export default function PlannerPage({
         console.log(`From URL | ${params.importStr[0]}`);
         const importString = params.importStr[0];
         const importStringDecoded = decodeURIComponent(importString);
+
         setData(JSON.parse(atob(importStringDecoded)));
       } else {
         // localStorage.getItem("data", btoa(JSON.stringify(data)));
@@ -38,7 +39,6 @@ export default function PlannerPage({
       }
     }
   }, [data]);
-
   useEffect(() => {
     if (data != null) {
       let masterCourseList = data.base_requirements.concat(
@@ -52,37 +52,36 @@ export default function PlannerPage({
       setCourseHashmap(masterCourseHashmap);
     }
   }, [data]);
+  const handleValidate = (event: any) => {};
+  const handleSchedule = (event: any) => {};
 
-  const handleDragEnd = (event: any) => {
-    const { over } = event;
-
-    // If the item is dropped over a container, set it as the parent
-    // otherwise reset the parent to `null`
-    setParent(over ? over.id : null);
-  };
+  useEffect(() => {
+    if (data != null && status == false) {
+      processJsonData(data, setData);
+      setStatus(true);
+    }
+  }, [data, status]);
 
   return (
     <>
       <div className="inline-block max-w-lg text-center justify-center">
         <h1 className={title()}>Planner</h1>
       </div>
-      <DndContext>
-        <div className="flex w-full h-svh overflow-x-auto flex-1">
-          {data == null || courseHashmap == null ? (
-            <></>
-          ) : (
-            data.user_schedule.map((sem) => {
-              return (
-                <SemesterCard
-                  key={sem.order}
-                  refmap={courseHashmap}
-                  semester={sem}
-                />
-              );
-            })
-          )}
-        </div>
-      </DndContext>
+      <div className="flex w-full h-svh overflow-x-auto flex-1">
+        {data == null || courseHashmap == null ? (
+          <></>
+        ) : (
+          data.user_schedule.map((sem) => {
+            return (
+              <SemesterCard
+                key={sem.order}
+                refmap={courseHashmap}
+                semester={sem}
+              />
+            );
+          })
+        )}
+      </div>
     </>
   );
 }

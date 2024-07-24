@@ -31,6 +31,11 @@ export type PlannerCourseType = {
   credits: number;
   exempted: boolean;
   wildcard: boolean;
+  add_prerequisites: string[];
+  take_together: string[];
+  prerequisites?: any | null;
+  semestersOffered?: number[];
+  fulfillRequirements?: string[];
 };
 
 export type PlannerUserScheduleSemesterType = {
@@ -38,14 +43,15 @@ export type PlannerUserScheduleSemesterType = {
   name: string;
   courses: string[];
   mark_complete: boolean;
-}
+};
 
 export type PlanarDataType = {
   major: string;
+  cohort: string;
   total_cu: number;
   exempted_math: true;
   base_requirements: PlannerCourseType[];
   non_base_exemptions: PlannerCourseType[];
   user_defined_courses: PlannerCourseType[];
   user_schedule: PlannerUserScheduleSemesterType[];
-}
+};
