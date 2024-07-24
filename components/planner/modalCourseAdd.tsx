@@ -118,22 +118,22 @@ export const AddCourseModal = ({
                 <Input
                   isClearable
                   isRequired
+                  defaultValue=""
+                  errorMessage="Please enter a valid course code"
+                  isInvalid={!validCourseCode}
                   label="Name"
                   placeholder="CS1231S"
-                  defaultValue=""
                   variant="bordered"
                   onValueChange={(value) => {
                     value == ""
                       ? setCourseCode(undefined)
                       : setCourseCode(value);
                   }}
-                  isInvalid={!validCourseCode}
-                  errorMessage="Please enter a valid course code"
                 />
                 <Select
+                  isRequired
                   label="Semester"
                   placeholder="Select an semester"
-                  isRequired
                   onChange={(e) => setSem(Number(e.target.value))}
                 >
                   {data.user_schedule
