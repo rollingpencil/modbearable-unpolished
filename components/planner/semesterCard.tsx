@@ -1,15 +1,15 @@
 import { useDroppable } from "@dnd-kit/react";
 import { CollisionPriority } from "@dnd-kit/abstract";
+import { Chip } from "@nextui-org/react";
 
 import { CourseCard } from "./courseCard";
+import { ModifySemesterModal } from "./modalSemesterModify";
 
 import {
   PlanarDataType,
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
 } from "@/types";
-import { Chip } from "@nextui-org/react";
-import { ModifySemesterModal } from "./modalSemesterModify";
 
 type semesterCardType = {
   refmap: Map<string, PlannerCourseType>;
@@ -54,7 +54,7 @@ export const SemesterCard = ({
           />
         </div>
         {semester.mark_complete ? (
-          <Chip color="success" variant="dot" className="">
+          <Chip className="" color="success" variant="dot">
             Done
           </Chip>
         ) : (

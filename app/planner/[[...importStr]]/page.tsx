@@ -123,9 +123,9 @@ export default function PlannerPage({
               return (
                 <SemesterCard
                   key={sem.order}
+                  data={data}
                   refmap={courseHashmap}
                   semester={sem}
-                  data={data}
                   setData={setData}
                 />
               );

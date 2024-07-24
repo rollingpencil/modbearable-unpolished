@@ -107,11 +107,11 @@ export const ModifySemesterModal = ({
                 />
                 <div className="flex py-2 px-1 justify-between">
                   <Checkbox
-                    radius="full"
                     classNames={{
                       label: "text-small",
                     }}
                     isSelected={complete}
+                    radius="full"
                     onValueChange={setComplete}
                   >
                     Mark semester as complete
@@ -120,15 +120,15 @@ export const ModifySemesterModal = ({
               </ModalBody>
               <ModalFooter>
                 <Tooltip
-                  content="You can only delete when the semester is empty of courses."
                   color="danger"
+                  content="You can only delete when the semester is empty of courses."
                 >
                   <span className="mr-auto">
                     <Button
                       color="danger"
+                      isDisabled={semester.courses.length > 0}
                       variant="solid"
                       onPress={handleDeleteSemester}
-                      isDisabled={semester.courses.length > 0}
                     >
                       DELETE
                     </Button>
