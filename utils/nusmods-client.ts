@@ -10,10 +10,7 @@ export const retrieveSpecificMods = async (
     fulfillRequirements: [],
   };
 
-  if (wildcard == true || courseCode.startsWith("EX")) {
-    // Handle the case where wildcard is true
-    return baseResponse;
-  } else {
+  if (wildcard == false && !courseCode.startsWith("EX")) {
     await fetch(
       `https://api.nusmods.com/v2/${cohort}/modules/${courseCode}.json`,
     )
@@ -21,7 +18,7 @@ export const retrieveSpecificMods = async (
       .then((data) => {
         baseResponse = data;
       });
-
-    return baseResponse;
   }
+
+  return baseResponse;
 };
