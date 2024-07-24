@@ -92,7 +92,11 @@ export default function PlannerPage({
           sem.courses.splice(destSemIdx, 0, course);
         }
       }
-      setData({ user_schedule: modifiedUserSchedule, ...data });
+
+      setData({
+        ...data!,
+        user_schedule: modifiedUserSchedule,
+      });
     }
   };
 
