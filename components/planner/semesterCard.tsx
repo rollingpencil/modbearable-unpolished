@@ -10,6 +10,7 @@ import {
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
 } from "@/types";
+import { useEffect, useState } from "react";
 
 type semesterCardType = {
   refmap: Map<string, PlannerCourseType>;
@@ -42,6 +43,17 @@ export const SemesterCard = ({
     collisionPriority: CollisionPriority.Low,
   });
 
+  const [totalSemCU, setTotalSemCU] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    setTotalSemCU(
+      semester.courses
+        .map((c, i, arr) => refmap.get(c))
+        .map((c, i, arr) => c!.credits)
+        .reduce((a, c) => a + c, 0),
+    );
+  }, [semester, refmap]);
+
   return (
     <div className="w-1/5 min-w-72 h-full px-2">
       <div className="-flex flex-col">
@@ -53,6 +65,13 @@ export const SemesterCard = ({
             setData={setData}
           />
         </div>
+        {totalSemCU == undefined ? (
+          <></>
+        ) : (
+          <Chip color="default" variant="dot">
+            {totalSemCU} Credits
+          </Chip>
+        )}
         {semester.mark_complete ? (
           <Chip className="" color="success" variant="dot">
             Done
