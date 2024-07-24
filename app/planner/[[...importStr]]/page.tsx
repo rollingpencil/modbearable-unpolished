@@ -7,6 +7,7 @@ import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
+import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
 
 export default function PlannerPage({
   params,
@@ -40,6 +41,7 @@ export default function PlannerPage({
       }
     }
   }, [data]);
+
   useEffect(() => {
     if (data != null) {
       let masterCourseList = data.base_requirements.concat(
@@ -53,6 +55,7 @@ export default function PlannerPage({
       setCourseHashmap(masterCourseHashmap);
     }
   }, [data]);
+
   const handleValidate = (event: any) => {};
   const handleSchedule = (event: any) => {};
 
@@ -102,8 +105,13 @@ export default function PlannerPage({
 
   return (
     <>
-      <div className="inline-block max-w-lg text-center justify-center">
+      <div className="inline-flex w-full items-center">
         <h1 className={title()}>Planner</h1>
+        {data == null || courseHashmap == null ? (
+          <></>
+        ) : (
+          <AddSemesterModal data={data} setData={setData} />
+        )}
       </div>
 
       <div className="flex w-full h-svh overflow-x-auto flex-1">
