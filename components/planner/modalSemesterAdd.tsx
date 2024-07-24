@@ -8,7 +8,6 @@ import {
   Button,
   useDisclosure,
   Input,
-  Checkbox,
 } from "@nextui-org/react";
 
 import { PlanarDataType, PlannerUserScheduleSemesterType } from "@/types";
@@ -42,21 +41,21 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
   return (
     <>
       <Button
+        className="capitalize mx-2"
+        color="warning"
         size="lg"
         variant="flat"
-        color="warning"
         onPress={onOpen}
-        className="capitalize mx-2"
       >
         Add Semester
       </Button>
       <Modal
         backdrop="blur"
+        hideCloseButton={true}
         isOpen={isOpen}
         placement="top-center"
-        onOpenChange={onOpenChange}
         onClose={onClose}
-        hideCloseButton={true}
+        onOpenChange={onOpenChange}
       >
         <ModalContent>
           {(onClose) => (
@@ -66,11 +65,11 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
               </ModalHeader>
               <ModalBody>
                 <Input
+                  isClearable
+                  isRequired
                   label="Name"
                   placeholder="Semester XX"
-                  isRequired
                   variant="bordered"
-                  isClearable
                   onValueChange={(value) => {
                     value == "" ? setSemName(undefined) : setSemName(value);
                   }}
