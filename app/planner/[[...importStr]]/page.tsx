@@ -125,6 +125,8 @@ export default function PlannerPage({
                   key={sem.order}
                   refmap={courseHashmap}
                   semester={sem}
+                  data={data}
+                  setData={setData}
                 />
               );
             })

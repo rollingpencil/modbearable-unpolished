@@ -3,11 +3,19 @@ import { CollisionPriority } from "@dnd-kit/abstract";
 
 import { CourseCard } from "./courseCard";
 
-import { PlannerCourseType, PlannerUserScheduleSemesterType } from "@/types";
+import {
+  PlanarDataType,
+  PlannerCourseType,
+  PlannerUserScheduleSemesterType,
+} from "@/types";
+import { Chip } from "@nextui-org/react";
+import { ModifySemesterModal } from "./modalSemesterModify";
 
 type semesterCardType = {
   refmap: Map<string, PlannerCourseType>;
   semester: PlannerUserScheduleSemesterType;
+  data: PlanarDataType;
+  setData: Function;
 };
 
 let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
@@ -21,7 +29,12 @@ let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
   take_together: [],
 };
 
-export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
+export const SemesterCard = ({
+  refmap,
+  semester,
+  data,
+  setData,
+}: semesterCardType) => {
   const { ref: dropRef } = useDroppable({
     id: semester.order,
     type: "semester",
@@ -31,7 +44,26 @@ export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
 
   return (
     <div className="w-1/5 min-w-72 h-full px-2">
-      <h3 className="text-2xl px-3">{semester.name}</h3>
+      <div className="-flex flex-col">
+        <div className="inline-flex flex-row w-full">
+          <h3 className="text-2xl">{semester.name}</h3>
+          <ModifySemesterModal
+            data={data}
+            semester={semester}
+            setData={setData}
+          />
+        </div>
+        {semester.mark_complete ? (
+          <Chip color="success" variant="dot" className="">
+            Done
+          </Chip>
+        ) : (
+          <Chip color="secondary" variant="dot">
+            Not Done
+          </Chip>
+        )}
+      </div>
+
       <div ref={dropRef} className="flex-1 overflow-y-auto h-full">
         {refmap == null ? (
           <></>
