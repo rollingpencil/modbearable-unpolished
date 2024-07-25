@@ -50,6 +50,7 @@ export const SemesterCard = ({
       semester.courses
         .map((c, i, arr) => refmap.get(c))
         .map((c, i, arr) => c!.credits)
+        .filter((c) => typeof c === "number")
         .reduce((a, c) => a + c, 0),
     );
   }, [semester, refmap]);

@@ -9,6 +9,7 @@ import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
 import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
 import { AddCourseModal } from "@/components/planner/modalCourseAdd";
+import { Chip } from "@nextui-org/react";
 
 export default function PlannerPage({
   params,
@@ -107,17 +108,41 @@ export default function PlannerPage({
   return (
     <>
       <div className="inline-flex w-full items-center">
-        <h1 className={title()}>Planner</h1>
         {data == null || courseHashmap == null ? (
-          <></>
+          <h1 className={title()}>Planner</h1>
         ) : (
           <>
-            <AddSemesterModal data={data} setData={setData} />
-            <AddCourseModal
-              data={data}
-              setData={setData}
-              setUpToDate={setStatus}
-            />
+            <span>
+              <h1 className={title()}>{data.major} Major</h1>
+
+              <p className="ml-1">
+                <Chip color="warning" variant="flat">
+                  Cohort: {data.cohort}
+                </Chip>
+
+                <Chip color="warning" variant="flat">
+                  Credits Planned{" "}
+                  {[
+                    ...data.base_requirements,
+                    ...data.non_base_exemptions,
+                    ...data.user_defined_courses,
+                  ]
+                    .map((c) => c.credits)
+                    .filter((c) => typeof c === "number")
+                    .reduce((a, c) => a + c, 0)}{" "}
+                  / {data.total_cu} Required
+                </Chip>
+              </p>
+            </span>
+
+            <span className="ml-auto">
+              <AddSemesterModal data={data} setData={setData} />
+              <AddCourseModal
+                data={data}
+                setData={setData}
+                setUpToDate={setStatus}
+              />
+            </span>
           </>
         )}
       </div>
