@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Background,
   BackgroundVariant,
@@ -10,9 +10,10 @@ import {
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
-import { PlanarDataType, PlannerCourseType } from "@/types";
 import { useTheme } from "next-themes";
 import { Chip, ChipVariantProps } from "@nextui-org/react";
+
+import { PlanarDataType, PlannerCourseType } from "@/types";
 
 type PrerequisiteDiagramProps = {
   course: PlannerCourseType;
@@ -67,6 +68,7 @@ const processPrereq = (
             child,
           );
       });
+
       return fulfilled;
     }
 
@@ -81,7 +83,6 @@ const processPrereq = (
 
       for (let i = 0; i < childTree.or.length; i++) {
         let item = childTree.or[i];
-        console.log(item);
 
         if (typeof item == "string") {
           const code = item;
@@ -129,7 +130,6 @@ const processPrereq = (
               source: currNode,
               target: code,
             });
-            console.log("Added");
             fulfilled = true;
           }
         } else {
@@ -167,6 +167,7 @@ const processPrereq = (
             const subModList = item.nOf[1].map((submod: string) =>
               submod.slice(0, -2),
             );
+
             errorString = errorString.concat(`[${subModList.toString()}]`);
           }
           if (i < childTree.or.length - 1) {
@@ -192,7 +193,6 @@ const processPrereq = (
           source: currNode,
           target: errorString,
         });
-        console.log("Added");
       }
 
       return fulfilled;
@@ -200,6 +200,7 @@ const processPrereq = (
 
     return false;
   }
+
   return true;
 };
 
@@ -264,11 +265,11 @@ export const PrerequisiteDiagram = ({
         edgesReconnectable={false}
         elementsSelectable={false}
         fitView={true}
-        nodes={nodes}
         nodeTypes={nodeTypes}
+        nodes={nodes}
       >
         <Controls showInteractive={true} />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <Background gap={12} size={1} variant={BackgroundVariant.Dots} />
       </ReactFlow>
     </div>
   );
@@ -291,9 +292,9 @@ const CourseChipNode = ({ data, isConnectable }: CourseChipNodeProps) => {
   return (
     <div className="text-updater-node">
       <Handle
-        type="target"
-        position={Position.Top}
         isConnectable={isConnectable}
+        position={Position.Top}
+        type="target"
       />
       {data.error == null ? (
         <Chip color={data.status} size="lg" variant="solid">
@@ -306,10 +307,10 @@ const CourseChipNode = ({ data, isConnectable }: CourseChipNodeProps) => {
       )}
 
       <Handle
-        type="source"
-        position={Position.Bottom}
         id="b"
         isConnectable={isConnectable}
+        position={Position.Bottom}
+        type="source"
       />
     </div>
   );

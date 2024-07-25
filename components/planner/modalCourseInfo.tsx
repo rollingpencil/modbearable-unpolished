@@ -12,12 +12,13 @@ import {
 } from "@nextui-org/react";
 import { InfoOutlined } from "@ant-design/icons";
 
+import { PrerequisiteDiagram } from "./prereqDiagram";
+
 import {
   PlanarDataType,
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
 } from "@/types";
-import { PrerequisiteDiagram } from "./prereqDiagram";
 
 type CourseInfoModalProps = {
   data: PlanarDataType;
@@ -106,7 +107,7 @@ export const CourseInfoModal = ({
                 </span>
               </ModalHeader>
               <ModalBody>
-                <PrerequisiteDiagram data={data} course={course} />
+                <PrerequisiteDiagram course={course} data={data} />
               </ModalBody>
               <ModalFooter>
                 <Tooltip
