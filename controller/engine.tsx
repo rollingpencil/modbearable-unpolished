@@ -1,4 +1,5 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
+<<<<<<< HEAD
 import {
   PlannerCourseType,
   PlanarDataType,
@@ -6,6 +7,11 @@ import {
   PlannerUserScheduleSemesterType,
 } from "@/types/";
 
+=======
+import { PlannerCourseType, PlanarDataType } from "@/types/";
+import { topologicalSort, generateSchedule } from "./algorithm";
+import { Corben } from "next/font/google";
+>>>>>>> 60e7845 (added toplogical sort and fixed async issues on page.tsx)
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
   courses: PlannerCourseType[],
@@ -18,7 +24,7 @@ const fetchAndFilterPrerequisites = async (
     const prereqTree = courseData.prereqTree || {};
     const courseCodes = courses.reduce(
       (acc, course) => {
-        if (!course.exempted) acc[course.code] = true; // Only include non-exempted courses
+        if (!course.exempted) acc[course.code] = true; // includes non exempted courses
 
         return acc;
       },
@@ -113,6 +119,47 @@ const processCourseData = async (
     };
   }
 };
+<<<<<<< HEAD
+=======
+
+export const combineCourses = (
+  jsonData: PlanarDataType,
+): Record<string, PlannerCourseType> => {
+  const combined: Record<string, PlannerCourseType> = {};
+  const addCoursesToCombined = (courses: PlannerCourseType[]) => {
+    courses.forEach((course) => {
+      combined[course.code] = course;
+    });
+  };
+
+  addCoursesToCombined(jsonData.base_requirements);
+  addCoursesToCombined(jsonData.non_base_exemptions);
+  addCoursesToCombined(jsonData.user_defined_courses);
+
+  return combined;
+};
+// method signature for future implementation
+export const scheduleCourse = async (
+  jsonData: PlanarDataType,
+  setData: Function,
+  maxCredit: number,
+  maxCoreCredit: number,
+) => {
+  // combine json into one data dictionary
+  const CourseDict = combineCourses(jsonData);
+  // using topological sort to process the data
+  const sortedCourses = topologicalSort(CourseDict);
+
+  // schedule the data
+
+  //jsonData.user_schedule = schedule;
+  return jsonData;
+};
+const dependencyCheck = async (
+  jsonData: PlanarDataType,
+  setData: Function,
+) => {};
+>>>>>>> 60e7845 (added toplogical sort and fixed async issues on page.tsx)
 
 export const processJsonData = async (
   jsonData: PlanarDataType,

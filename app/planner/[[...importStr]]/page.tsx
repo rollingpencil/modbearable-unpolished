@@ -2,14 +2,8 @@
 
 import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
-import { Button, Chip } from "@nextui-org/react";
-import { BuildOutlined, DiffOutlined, SaveOutlined } from "@ant-design/icons";
 
-import {
-  dependencyCheck,
-  processJsonDataSimple,
-  scheduleCourse,
-} from "@/controller/engine";
+import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
@@ -34,6 +28,7 @@ export default function PlannerPage({
   const [courseError, setCourseError] = useState<Map<string, string[]>>();
   const [temp, setTemp] = useState<boolean>(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
+  const [schedule, setSchedule] = useState(false);
   const [courseHashmap, setCourseHashmap] = useState<Map<
     string,
     PlannerCourseType
@@ -168,8 +163,8 @@ export default function PlannerPage({
 
   useEffect(() => {
     if (data != null && status == false) {
-      // processJsonData(data, setData, setStatus);
-      processJsonDataSimple(data, setData, setStatus);
+      processJsonData(data, setData);
+      setStatus(true);
     }
   }, [data, status]);
 
@@ -210,6 +205,19 @@ export default function PlannerPage({
     }
   };
 
+  useEffect(() => {
+    const scheduleData = async () => {
+      if (data != null && status) {
+        const maxCredit = 20;
+        const maxCoreCredit = 16;
+        console.log("stage 1 to 2: ", data);
+        await scheduleCourse(data, setSchedule, maxCredit, maxCoreCredit);
+        setSchedule(true);
+      }
+    };
+
+    scheduleData();
+  }, [data, status, schedule]);
   return (
     <>
       <GeneralNoticeModal message={message} />
