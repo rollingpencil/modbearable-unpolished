@@ -33,7 +33,7 @@ export const AddCourseModal = ({
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [courseCode, setCourseCode] = useState<string | undefined>(undefined);
   const [sem, setSem] = useState<number | undefined>(undefined);
-  const [validCourseCode, setValidCourseCode] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleAddCourse = () => {
     if (courseCode != undefined && sem != undefined) {
@@ -43,49 +43,58 @@ export const AddCourseModal = ({
         false,
       );
 
-      Promise.all([courseInfoPromise])
-        .then((rawdata: Array<any>) => {
-          setValidCourseCode(true);
-          const courseInfo = rawdata[0];
+      if (
+        data.base_requirements.filter((c) => c.code == courseCode).length +
+          data.user_defined_courses.filter((c) => c.code == courseCode).length +
+          data.non_base_exemptions.filter((c) => c.code == courseCode).length >
+        0
+      ) {
+        setErrorMessage(`Duplicate Course Code: ${courseCode}`);
+      } else {
+        Promise.all([courseInfoPromise])
+          .then((rawdata: Array<any>) => {
+            setErrorMessage(null);
+            const courseInfo = rawdata[0];
 
-          let newCourseData: PlannerCourseType = {
-            code: courseCode,
-            name: courseInfo.title,
-            courseType: courseCode.startsWith("GE") ? "GE" : "Others",
-            credits: courseInfo.moduleCredit,
-            exempted: false,
-            wildcard: false,
-            add_prerequisites: [],
-            take_together: [],
-          };
+            let newCourseData: PlannerCourseType = {
+              code: courseCode,
+              name: courseInfo.title,
+              courseType: courseCode.startsWith("GE") ? "GE" : "Others",
+              credits: courseInfo.moduleCredit,
+              exempted: false,
+              wildcard: false,
+              add_prerequisites: [],
+              take_together: [],
+            };
 
-          let modified_user_defined_courses = data.user_defined_courses;
+            let modified_user_defined_courses = data.user_defined_courses;
 
-          modified_user_defined_courses.push(newCourseData);
+            modified_user_defined_courses.push(newCourseData);
 
-          let updated_user_schedule: PlannerUserScheduleSemesterType[] =
-            data.user_schedule;
+            let updated_user_schedule: PlannerUserScheduleSemesterType[] =
+              data.user_schedule;
 
-          updated_user_schedule.forEach((semData, index, us) => {
-            if (semData.order == sem) {
-              semData.courses.push(courseCode);
-              updated_user_schedule.splice(index, 1, semData);
-            }
+            updated_user_schedule.forEach((semData, index, us) => {
+              if (semData.order == sem) {
+                semData.courses.push(courseCode);
+                updated_user_schedule.splice(index, 1, semData);
+              }
+            });
+
+            setData({
+              ...data,
+              user_defined_courses: modified_user_defined_courses,
+              user_schedule: updated_user_schedule,
+            });
+            setUpToDate(false);
+            setCourseCode(undefined);
+            setSem(undefined);
+            onClose();
+          })
+          .catch(() => {
+            setErrorMessage("Please enter a valid course code");
           });
-
-          setData({
-            ...data,
-            user_defined_courses: modified_user_defined_courses,
-            user_schedule: updated_user_schedule,
-          });
-          setUpToDate(false);
-          setCourseCode(undefined);
-          setSem(undefined);
-          onClose();
-        })
-        .catch(() => {
-          setValidCourseCode(false);
-        });
+      }
     }
   };
 
@@ -119,8 +128,8 @@ export const AddCourseModal = ({
                   isClearable
                   isRequired
                   defaultValue=""
-                  errorMessage="Please enter a valid course code"
-                  isInvalid={!validCourseCode}
+                  errorMessage={errorMessage}
+                  isInvalid={errorMessage != null}
                   label="Name"
                   placeholder="CS1231S"
                   variant="bordered"
