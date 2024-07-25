@@ -2,6 +2,7 @@
 
 import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
+import { Chip } from "@nextui-org/react";
 
 import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
@@ -9,7 +10,6 @@ import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
 import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
 import { AddCourseModal } from "@/components/planner/modalCourseAdd";
-import { Chip } from "@nextui-org/react";
 
 export default function PlannerPage({
   params,
