@@ -55,7 +55,6 @@ const processPrereq = (
 
       childTree.and.forEach((child: any, index: number) => {
         fulfilled =
-          fulfilled &&
           processPrereq(
             hashmap,
             nodes,
@@ -66,7 +65,7 @@ const processPrereq = (
             y + 100,
             currNode,
             child,
-          );
+          ) && fulfilled;
       });
 
       return fulfilled;
