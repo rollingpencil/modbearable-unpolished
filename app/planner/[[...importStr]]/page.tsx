@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { processJsonData } from "@/controller/engine";
+import { processJsonData, scheduleCourse } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
@@ -14,6 +14,7 @@ export default function PlannerPage({
 }) {
   const [status, setStatus] = useState(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
+  const [schedule, setSchedule] = useState(false);
   const [courseHashmap, setCourseHashmap] = useState<Map<
     string,
     PlannerCourseType
@@ -56,12 +57,29 @@ export default function PlannerPage({
   const handleSchedule = (event: any) => {};
 
   useEffect(() => {
-    if (data != null && status == false) {
-      processJsonData(data, setData);
-      setStatus(true);
-    }
+    const processData = async () => {
+      if (data != null && !status) {
+        await processJsonData(data, setData);
+        setStatus(true);
+      }
+    };
+
+    processData();
   }, [data, status]);
 
+  useEffect(() => {
+    const scheduleData = async () => {
+      if (data != null && status) {
+        const maxCredit = 20;
+        const maxCoreCredit = 16;
+        console.log("stage 1 to 2: ", data);
+        await scheduleCourse(data, setSchedule, maxCredit, maxCoreCredit);
+        setSchedule(true);
+      }
+    };
+
+    scheduleData();
+  }, [data, status, schedule]);
   return (
     <>
       <div className="inline-block max-w-lg text-center justify-center">
