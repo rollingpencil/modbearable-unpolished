@@ -114,8 +114,8 @@ export default function PlannerPage({
           <>
             <span>
               <h1 className={title()}>{data.major} Major</h1>
-
-              <p className="ml-1">
+              <br />
+              <span className="ml-1">
                 <Chip color="warning" variant="flat">
                   Cohort: {data.cohort}
                 </Chip>
@@ -132,7 +132,7 @@ export default function PlannerPage({
                     .reduce((a, c) => a + c, 0)}{" "}
                   / {data.total_cu} Required
                 </Chip>
-              </p>
+              </span>
             </span>
 
             <span className="ml-auto">
