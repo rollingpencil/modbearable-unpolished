@@ -1,17 +1,15 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
-<<<<<<< HEAD
 import {
   PlannerCourseType,
   PlanarDataType,
   RetrieveSpecificModsType,
   PlannerUserScheduleSemesterType,
 } from "@/types/";
-
-=======
-import { PlannerCourseType, PlanarDataType } from "@/types/";
-import { topologicalSort, generateSchedule } from "./algorithm";
+import { topologicalSort, generateSchedule, convertToDict } from "./algorithm";
 import { Corben } from "next/font/google";
->>>>>>> 60e7845 (added toplogical sort and fixed async issues on page.tsx)
+
+type CourseDict = { [key: string]: PlannerCourseType };
+
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
   courses: PlannerCourseType[],
@@ -119,25 +117,26 @@ const processCourseData = async (
     };
   }
 };
-<<<<<<< HEAD
-=======
 
-export const combineCourses = (
-  jsonData: PlanarDataType,
-): Record<string, PlannerCourseType> => {
-  const combined: Record<string, PlannerCourseType> = {};
-  const addCoursesToCombined = (courses: PlannerCourseType[]) => {
-    courses.forEach((course) => {
-      combined[course.code] = course;
-    });
-  };
+function cleanCourses(courseArray: PlannerCourseType[]) {
+  // Ensure the array itself isn't null and filter out null or undefined entries
+  if (!courseArray) return []; // If the input array is null/undefined, return an empty array
 
-  addCoursesToCombined(jsonData.base_requirements);
-  addCoursesToCombined(jsonData.non_base_exemptions);
-  addCoursesToCombined(jsonData.user_defined_courses);
+  const filteredCourses = courseArray.filter((course) => course != null);
 
-  return combined;
-};
+  // Validate each course object further to ensure it's a valid object
+  return filteredCourses.filter((course) => {
+    // Check if 'course' is an object and not null or undefined
+    if (typeof course === "object" && course !== null) {
+      return Object.entries(course).every(([key, value]) => {
+        // Ensure no key is null and no value is undefined
+        return key != null && value !== undefined;
+      });
+    }
+    return false; // Exclude anything that is not a valid object
+  });
+}
+
 // method signature for future implementation
 export const scheduleCourse = async (
   jsonData: PlanarDataType,
@@ -146,20 +145,29 @@ export const scheduleCourse = async (
   maxCoreCredit: number,
 ) => {
   // combine json into one data dictionary
-  const CourseDict = combineCourses(jsonData);
+  //const processedJson = combineCourses(jsonData);
+  const BaseReq = convertToDict(jsonData.base_requirements);
+  const NonBase = convertToDict(jsonData.non_base_exemptions);
+  const UserDefined = convertToDict(jsonData.user_defined_courses);
+  // Merge all dictionaries into one
+  const CourseDict: CourseDict = {
+    ...BaseReq,
+    ...NonBase,
+    ...UserDefined,
+  };
+  console.log("dict :", CourseDict);
   // using topological sort to process the data
   const sortedCourses = topologicalSort(CourseDict);
-
+  console.log("sorted :", sortedCourses);
+  const cleanSortedCourses = cleanCourses(sortedCourses);
   // schedule the data
+  const suggestedSchedule = generateSchedule(cleanSortedCourses, 20, 16);
+  console.log("schedule :", suggestedSchedule);
+  // const schedule = scheduleCourse(sortedCourses, maxCredit, maxCoreCredit);
 
   //jsonData.user_schedule = schedule;
   return jsonData;
 };
-const dependencyCheck = async (
-  jsonData: PlanarDataType,
-  setData: Function,
-) => {};
->>>>>>> 60e7845 (added toplogical sort and fixed async issues on page.tsx)
 
 export const processJsonData = async (
   jsonData: PlanarDataType,
