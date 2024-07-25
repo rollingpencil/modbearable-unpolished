@@ -8,8 +8,9 @@ import {
 } from "@nextui-org/react";
 // import { useSortable } from "@dnd-kit/react/sortable";
 
-import { PlanarDataType, PlannerCourseType } from "@/types";
 import { CourseInfoModal } from "./modalCourseInfo";
+
+import { PlanarDataType, PlannerCourseType } from "@/types";
 
 type courseCardType = {
   courseInfo: PlannerCourseType;
@@ -43,8 +44,8 @@ export const CourseCard = ({
         <CourseInfoModal
           course={courseInfo}
           data={data}
-          setData={setData}
           semOrder={semOrder}
+          setData={setData}
         />
       </CardHeader>
       <CardBody className="px-3 py-1">

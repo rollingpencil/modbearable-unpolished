@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Modal,
   ModalContent,
@@ -7,8 +7,6 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Input,
-  Checkbox,
   Tooltip,
   Chip,
 } from "@nextui-org/react";
@@ -87,18 +85,18 @@ export const CourseInfoModal = ({
                 <h1> About {course.code}</h1>
                 <h2>{course.name}</h2>
                 <span className="flex-row">
-                  <Chip variant="shadow" color="warning" className="mx-1">
+                  <Chip className="mx-1" color="warning" variant="shadow">
                     {course.credits} Credits
                   </Chip>
-                  <Chip variant="shadow" color="warning" className="mx-1">
+                  <Chip className="mx-1" color="warning" variant="shadow">
                     Type: {course.courseType}
                   </Chip>
                   {course.exempted ? (
-                    <Chip variant="shadow" color="success" className="mx-1">
+                    <Chip className="mx-1" color="success" variant="shadow">
                       Exempted
                     </Chip>
                   ) : (
-                    <Chip variant="shadow" color="danger" className="mx-1">
+                    <Chip className="mx-1" color="danger" variant="shadow">
                       Not Exempted
                     </Chip>
                   )}
@@ -113,13 +111,13 @@ export const CourseInfoModal = ({
                   <span className="mr-auto">
                     <Button
                       color="danger"
-                      variant="solid"
-                      onPress={handleDeleteCourse}
                       isDisabled={
                         data.user_defined_courses
                           .map((c) => c.code)
                           .filter((c) => c == course.code).length == 0
                       }
+                      variant="solid"
+                      onPress={handleDeleteCourse}
                     >
                       DELETE
                     </Button>

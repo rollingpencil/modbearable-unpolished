@@ -1,6 +1,7 @@
 import { useDroppable } from "@dnd-kit/react";
 import { CollisionPriority } from "@dnd-kit/abstract";
 import { Chip } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 
 import { CourseCard } from "./courseCard";
 import { ModifySemesterModal } from "./modalSemesterModify";
@@ -10,7 +11,6 @@ import {
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
 } from "@/types";
-import { useEffect, useState } from "react";
 
 type semesterCardType = {
   refmap: Map<string, PlannerCourseType>;
@@ -101,9 +101,9 @@ export const SemesterCard = ({
               <CourseCard
                 key={courseCode}
                 courseInfo={augmentedCourse}
+                data={data}
                 index={semester.courses.indexOf(courseCode)}
                 semOrder={semester.order}
-                data={data}
                 setData={setData}
               />
             );
