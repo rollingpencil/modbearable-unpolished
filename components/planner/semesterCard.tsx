@@ -56,7 +56,7 @@ export const SemesterCard = ({
 
   return (
     <div className="w-1/5 min-w-72 h-full px-2">
-      <div className="-flex flex-col">
+      <div className="flex flex-col">
         <div className="inline-flex flex-row w-full">
           <h3 className="text-2xl">{semester.name}</h3>
           <ModifySemesterModal
@@ -82,8 +82,7 @@ export const SemesterCard = ({
           </Chip>
         )}
       </div>
-
-      <div ref={dropRef} className="flex-1 overflow-y-auto h-full">
+      <div ref={dropRef} className="flex-1 overflow-y-auto">
         {refmap == null ? (
           <></>
         ) : (
@@ -104,6 +103,8 @@ export const SemesterCard = ({
                 courseInfo={augmentedCourse}
                 index={semester.courses.indexOf(courseCode)}
                 semOrder={semester.order}
+                data={data}
+                setData={setData}
               />
             );
           })
