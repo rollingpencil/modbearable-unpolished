@@ -11,6 +11,7 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
+import { PlusOutlined } from "@ant-design/icons";
 
 import {
   PlanarDataType,
@@ -104,10 +105,11 @@ export const AddCourseModal = ({
         className="capitalize mx-2"
         color="warning"
         size="lg"
+        startContent={<PlusOutlined />}
         variant="flat"
         onPress={onOpen}
       >
-        Add Course
+        Course
       </Button>
       <Modal
         backdrop="blur"

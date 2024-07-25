@@ -9,6 +9,7 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react";
+import { PlusOutlined } from "@ant-design/icons";
 
 import { PlanarDataType, PlannerUserScheduleSemesterType } from "@/types";
 
@@ -45,10 +46,11 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
         className="capitalize mx-2"
         color="warning"
         size="lg"
+        startContent={<PlusOutlined />}
         variant="flat"
         onPress={onOpen}
       >
-        Add Semester
+        Semester
       </Button>
       <Modal
         backdrop="blur"

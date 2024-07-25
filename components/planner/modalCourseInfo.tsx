@@ -10,6 +10,7 @@ import {
   Tooltip,
   Chip,
 } from "@nextui-org/react";
+import { InfoOutlined } from "@ant-design/icons";
 
 import {
   PlanarDataType,
@@ -61,13 +62,14 @@ export const CourseInfoModal = ({
   return (
     <>
       <Button
+        isIconOnly
         className="capitalize ml-auto"
         color="default"
-        size="sm"
-        variant="solid"
+        size="md"
+        variant="shadow"
         onPress={onOpen}
       >
-        Info
+        <InfoOutlined />
       </Button>
       <Modal
         backdrop="blur"

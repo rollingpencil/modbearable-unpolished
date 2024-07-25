@@ -58,7 +58,7 @@ export const SemesterCard = ({
   return (
     <div className="w-1/5 min-w-72 h-full px-2">
       <div className="flex flex-col">
-        <div className="inline-flex flex-row w-full">
+        <div className="inline-flex flex-row w-full py-1">
           <h3 className="text-2xl">{semester.name}</h3>
           <ModifySemesterModal
             data={data}
@@ -66,22 +66,24 @@ export const SemesterCard = ({
             setData={setData}
           />
         </div>
-        {totalSemCU == undefined ? (
-          <></>
-        ) : (
-          <Chip color="default" variant="dot">
-            {totalSemCU} Credits
-          </Chip>
-        )}
-        {semester.mark_complete ? (
-          <Chip className="" color="success" variant="dot">
-            Done
-          </Chip>
-        ) : (
-          <Chip color="secondary" variant="dot">
-            Not Done
-          </Chip>
-        )}
+        <span className="flex-row flex-wrap">
+          {totalSemCU == undefined ? (
+            <></>
+          ) : (
+            <Chip className="mx-1" color="default" variant="dot">
+              {totalSemCU} Credits
+            </Chip>
+          )}
+          {semester.mark_complete ? (
+            <Chip className="mx-1" color="success" variant="dot">
+              Done
+            </Chip>
+          ) : (
+            <Chip className="mx-1" color="secondary" variant="dot">
+              Not Done
+            </Chip>
+          )}
+        </span>
       </div>
       <div ref={dropRef} className="flex-1 overflow-y-auto">
         {refmap == null ? (
