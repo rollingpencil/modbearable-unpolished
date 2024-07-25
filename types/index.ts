@@ -38,6 +38,7 @@ export type PlannerCourseType = {
   fulfillRequirements?: string[];
   department?: string;  
   dependencies?: string[][];  
+  classNumber?: string;
 };
 
 export type PlannerUserScheduleSemesterType = {

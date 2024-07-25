@@ -2,9 +2,81 @@
 // Credits to:
 // Algorithm by Rohan "RJ" Jaiswal
 // Adapted from chaudhary1337's solution on Leetcode 1494
-import { PlannerCourseType } from "@/types";
-
+import {
+  PlanarDataType,
+  PlannerCourseType,
+  PlannerUserScheduleSemesterType,
+} from "@/types";
+const inDegrees: { [key: string]: number } = {};
 type CourseDict = { [key: string]: PlannerCourseType };
+
+export function convertToDict(nodes: PlannerCourseType[]): CourseDict {
+  let result: CourseDict = {};
+  for (let node of nodes) {
+    // Extract course code and class number from the course code
+    let [department, course] = node.code.split(/(\d+)/);
+
+    // Transform the dependencies to fit the original function's structure
+    // Handle complex prerequisites
+    let dependencies: string[][] = processPrerequisites(node.prerequisites);
+
+    result[node.code] = {
+      code: node.code,
+      department,
+      name: node.name,
+      dependencies: dependencies,
+      prerequisites: node.prerequisites,
+      credits: node.credits,
+      courseType: node.courseType,
+      fulfillRequirements: node.fulfillRequirements,
+      semestersOffered: node.semestersOffered,
+      take_together: node.take_together,
+      exempted: node.exempted,
+      wildcard: node.wildcard,
+      add_prerequisites: node.add_prerequisites,
+    };
+  }
+
+  return result;
+}
+
+// Utility function to process any form of prerequisites into a normalized format
+function processPrerequisites(prerequisites: any): string[][] {
+  let dependencies: string[][] = [];
+
+  if (prerequisites) {
+    if (typeof prerequisites === "string") {
+      dependencies.push([prerequisites]);
+    } else if (Array.isArray(prerequisites)) {
+      dependencies.push(prerequisites);
+    } else if (prerequisites.and || prerequisites.or) {
+      if (prerequisites.and) {
+        // "And" dependencies need all listed prerequisites
+        dependencies.push(flattenDependencies(prerequisites.and));
+      }
+      if (prerequisites.or) {
+        // "Or" dependencies are treated as optional, so each is its own list
+        prerequisites.or.forEach((dep: any) => {
+          dependencies = dependencies.concat(processPrerequisites(dep));
+        });
+      }
+    }
+  }
+
+  return dependencies;
+}
+
+// Flatten nested arrays or objects
+function flattenDependencies(deps: any): string[] {
+  if (typeof deps === "string") {
+    return [deps];
+  } else if (Array.isArray(deps)) {
+    return deps.flat().filter((dep: any) => typeof dep === "string");
+  } else if (typeof deps === "object" && (deps.and || deps.or)) {
+    return processPrerequisites(deps).flat();
+  }
+  return [];
+}
 
 export function topologicalSort(courses: CourseDict) {
   let visited: { [key: string]: boolean } = {};
@@ -23,12 +95,6 @@ export function topologicalSort(courses: CourseDict) {
     let dependencies;
     try {
       dependencies = courses[node].prerequisites;
-      console.log(
-        "Loading prereq for :",
-        courses[node].code,
-        " => ",
-        dependencies,
-      );
     } catch (error) {
       console.log("Error for node: " + node);
     }
@@ -75,7 +141,8 @@ export function topologicalSort(courses: CourseDict) {
 
   // Reverse the stack to get the correct order of courses
   console.log("Final topological order:", stack);
-  return stack.reverse;
+
+  return stack.reverse(); //return an object
 }
 
 export function generateSchedule(
@@ -88,7 +155,7 @@ export function generateSchedule(
   const schedule: string[][] = [];
 
   for (const [courseName, courseData] of Object.entries(json)) {
-    const dependencies = courseData.dependencies || [];
+    const dependencies = courseData.prerequisites || [];
     graph[courseName] = dependencies;
     visited[courseName] = 0;
   }
