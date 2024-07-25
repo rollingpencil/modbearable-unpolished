@@ -17,6 +17,7 @@ import {
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
 } from "@/types";
+import { PrerequisiteDiagram } from "./prereqDiagram";
 
 type CourseInfoModalProps = {
   data: PlanarDataType;
@@ -104,7 +105,9 @@ export const CourseInfoModal = ({
                   )}
                 </span>
               </ModalHeader>
-              <ModalBody>TREE_DIAGRAM_HERE</ModalBody>
+              <ModalBody>
+                <PrerequisiteDiagram data={data} course={course} />
+              </ModalBody>
               <ModalFooter>
                 <Tooltip
                   color="danger"
