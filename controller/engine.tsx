@@ -3,6 +3,7 @@ import {
   PlannerCourseType,
   PlanarDataType,
   RetrieveSpecificModsType,
+  PlannerUserScheduleSemesterType,
 } from "@/types/";
 
 const fetchAndFilterPrerequisites = async (
@@ -269,12 +270,113 @@ export const processJsonDataSimple = async (
 export const scheduleCourse = async (
   data: PlanarDataType | null,
   setData: Function,
+  setCourseError: Function,
 ) => {
+  const MAX_COURSE_PER_SEM = 5;
+
   const masterCourseList = [
     ...data!.base_requirements,
     ...data!.non_base_exemptions,
     ...data!.user_defined_courses,
   ];
+
+  let user_schedule: PlannerUserScheduleSemesterType[] = [
+    {
+      order: 0,
+      name: "Exemptions",
+      courses: masterCourseList.filter((c) => c.exempted).map((c) => c.code),
+      mark_complete: true,
+    },
+  ];
+
+  let limitedHashmap = new Map(
+    masterCourseList.filter((c) => c.exempted).map((c) => [c.code, c]),
+  );
+
+  let courseForSchedule = masterCourseList.filter((c) => !c.exempted);
+
+  const courseForScheduleCount = courseForSchedule.length;
+
+  let errorLog = new Map<string, string[]>();
+
+  let rejectedCourses: PlannerCourseType[] = [];
+
+  while (courseForSchedule.length > 0) {
+    let currSem: PlannerCourseType[] = [];
+
+    while (currSem.length < MAX_COURSE_PER_SEM) {
+      const curCourse = courseForSchedule.shift();
+      const curCourseStatus: boolean = processPrereq(
+        limitedHashmap,
+        curCourse!.code,
+        curCourse!.prerequisites,
+        false,
+        errorLog,
+      );
+
+      if (curCourseStatus) {
+        currSem.push(curCourse!);
+        console.log(`Processing: ${curCourse!.code} | Added`);
+      } else {
+        const count = errorLog.has(curCourse!.code)
+          ? errorLog.get(curCourse!.code)!.length
+          : 0;
+
+        if (count > courseForScheduleCount * 2) {
+          rejectedCourses.push(curCourse!);
+        } else {
+          courseForSchedule.push(curCourse!);
+        }
+        console.log(`Processing: ${curCourse!.code} | Requeue | ${count}`);
+      }
+
+      if (courseForSchedule.length == 0) {
+        break;
+      }
+    }
+
+    for (const curSemCourse of currSem) {
+      limitedHashmap.set(curSemCourse.code, curSemCourse);
+    }
+
+    user_schedule.push({
+      order: user_schedule.length,
+      name: `Semester ${user_schedule.length}`,
+      courses: currSem.map((c) => c.code),
+      mark_complete: false,
+    });
+    currSem = [];
+  }
+
+  const rejectedCoursesCode = rejectedCourses.map((c) => c.code);
+  console.log(`Rejected: ${rejectedCoursesCode}`);
+
+  const filteredErrorLogs = new Map<string, string[]>();
+
+  errorLog.forEach((v, k) => {
+    if (rejectedCoursesCode.filter((c) => c == k).length > 0) {
+      filteredErrorLogs.set(k, [`${k} Could not be auto-scheduled`]);
+    }
+  });
+
+  while (rejectedCourses.length > MAX_COURSE_PER_SEM) {
+    user_schedule.push({
+      order: user_schedule.length,
+      name: `Semester ${user_schedule.length}`,
+      courses: rejectedCourses.slice(0, 5).map((c) => c.code),
+      mark_complete: false,
+    });
+    rejectedCourses.splice(0, 5);
+  }
+  user_schedule.push({
+    order: user_schedule.length,
+    name: `Semester ${user_schedule.length}`,
+    courses: rejectedCourses.map((c) => c.code),
+    mark_complete: false,
+  });
+
+  setData({ ...data, user_schedule: user_schedule });
+  setCourseError(filteredErrorLogs);
 };
 export const dependencyCheck = async (
   data: PlanarDataType | null,
@@ -360,6 +462,9 @@ const processPrereq = (
             console.log(`${currNode}: Found ${code}`);
             fulfilled = true;
           }
+        } else if ("and" in item) {
+          fulfilled =
+            fulfilled || processPrereq(hashmap, currNode, item, true, errorLog);
         } else {
           // nOf case
           const subModList = item.nOf[1];
@@ -383,6 +488,9 @@ const processPrereq = (
 
           if (typeof item == "string") {
             errorString = errorString.concat(item.slice(0, -2));
+          } else if ("and" in item) {
+            const subModList = item.and.map((submod: any) => submod.or[0]);
+            errorString = errorString.concat(`[${subModList.toString()}]`);
           } else {
             const subModList = item.nOf[1].map((submod: string) =>
               submod.slice(0, -2),

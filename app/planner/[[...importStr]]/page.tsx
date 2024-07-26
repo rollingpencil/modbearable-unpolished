@@ -5,7 +5,11 @@ import { useEffect, useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
 import { BuildOutlined, DiffOutlined, SaveOutlined } from "@ant-design/icons";
 
-import { dependencyCheck, processJsonDataSimple } from "@/controller/engine";
+import {
+  dependencyCheck,
+  processJsonDataSimple,
+  scheduleCourse,
+} from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
@@ -152,7 +156,9 @@ export default function PlannerPage({
     dependencyCheck(data, courseHashmap, setCourseError);
   };
 
-  const handleSchedule = () => {};
+  const handleSchedule = () => {
+    scheduleCourse(data, setData, setCourseError);
+  };
 
   useEffect(() => {
     if (data != null && status == false) {
