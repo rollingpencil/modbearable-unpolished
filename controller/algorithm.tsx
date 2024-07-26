@@ -6,6 +6,7 @@ import {
   PlanarDataType,
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
+  Prerequisites,
 } from "@/types";
 const inDegrees: { [key: string]: number } = {};
 type CourseDict = { [key: string]: PlannerCourseType };
@@ -16,15 +17,10 @@ export function convertToDict(nodes: PlannerCourseType[]): CourseDict {
     // Extract course code and class number from the course code
     let [department, course] = node.code.split(/(\d+)/);
 
-    // Transform the dependencies to fit the original function's structure
-    // Handle complex prerequisites
-    let dependencies: string[][] = processPrerequisites(node.prerequisites);
-
     result[node.code] = {
       code: node.code,
       department,
       name: node.name,
-      dependencies: dependencies,
       prerequisites: node.prerequisites,
       credits: node.credits,
       courseType: node.courseType,
@@ -38,44 +34,6 @@ export function convertToDict(nodes: PlannerCourseType[]): CourseDict {
   }
 
   return result;
-}
-
-// Utility function to process any form of prerequisites into a normalized format
-function processPrerequisites(prerequisites: any): string[][] {
-  let dependencies: string[][] = [];
-
-  if (prerequisites) {
-    if (typeof prerequisites === "string") {
-      dependencies.push([prerequisites]);
-    } else if (Array.isArray(prerequisites)) {
-      dependencies.push(prerequisites);
-    } else if (prerequisites.and || prerequisites.or) {
-      if (prerequisites.and) {
-        // "And" dependencies need all listed prerequisites
-        dependencies.push(flattenDependencies(prerequisites.and));
-      }
-      if (prerequisites.or) {
-        // "Or" dependencies are treated as optional, so each is its own list
-        prerequisites.or.forEach((dep: any) => {
-          dependencies = dependencies.concat(processPrerequisites(dep));
-        });
-      }
-    }
-  }
-
-  return dependencies;
-}
-
-// Flatten nested arrays or objects
-function flattenDependencies(deps: any): string[] {
-  if (typeof deps === "string") {
-    return [deps];
-  } else if (Array.isArray(deps)) {
-    return deps.flat().filter((dep: any) => typeof dep === "string");
-  } else if (typeof deps === "object" && (deps.and || deps.or)) {
-    return processPrerequisites(deps).flat();
-  }
-  return [];
 }
 
 export function topologicalSort(courses: CourseDict) {
@@ -142,108 +100,130 @@ export function topologicalSort(courses: CourseDict) {
   // Reverse the stack to get the correct order of courses
   console.log("Final topological order:", stack);
 
-  return stack.reverse(); //return an object
+  return stack; //return an object
 }
+const cleanString = (input: string) => {
+  // Trim whitespace and remove leading commas
+  return input.trim().replace(/^,/, "");
+};
+const processPrerequisites = (prereqs: Prerequisites | undefined): string[] => {
+  let results: string[] = [];
+
+  if (prereqs?.or) {
+    // Map 'or' prerequisites and wrap each prerequisite in brackets to indicate a choice
+    let orResults = prereqs.or.map((dep) =>
+      typeof dep === "string"
+        ? `[${dep}]`
+        : processPrerequisites(dep).join(", "),
+    );
+    results.push(...orResults);
+  }
+
+  if (prereqs?.and) {
+    // Map 'and' prerequisites and concatenate directly since all are required
+    let andResults = prereqs.and.map((dep) =>
+      typeof dep === "string" ? dep : processPrerequisites(dep).join(", "),
+    );
+    if (andResults.length > 0) {
+      results.push(andResults.join(","));
+    }
+  }
+
+  // Correctly handle cleaning up the results to remove leading commas or spaces
+  return results.map((r) => {
+    // Check for leading commas and remove them specifically, preserving all other content
+    return r.replace(/^,\s*/, "");
+  });
+};
 
 export function generateSchedule(
-  json: CourseDict,
+  planData: PlannerCourseType[],
   maxCredit: number,
-  maxCsCredit: number, // Add a parameter for max CS credits
-): string[][] {
-  const graph: { [key: string]: string[][] } = {};
-  const visited: { [key: string]: number } = {};
-  const schedule: string[][] = [];
-
-  for (const [courseName, courseData] of Object.entries(json)) {
-    const dependencies = courseData.prerequisites || [];
-    graph[courseName] = dependencies;
-    visited[courseName] = 0;
-  }
-
-  const creditSum = (nodes: string[], courseJson: CourseDict): number => {
-    return nodes.reduce((acc, course) => acc + courseJson[course].credits, 0);
-  };
-
-  const csCreditSum = (nodes: string[], courseJson: CourseDict): number => {
-    return nodes.reduce((acc, course) => {
-      return courseJson[course].department === "CS"
-        ? acc + courseJson[course].credits
-        : acc;
-    }, 0);
-  };
-
+  maxCsCredit: number,
+): PlannerUserScheduleSemesterType[] {
+  const graph: { [key: string]: string[] } = {};
   const inDegrees: { [key: string]: number } = {};
-  for (const [course, dependencies] of Object.entries(graph)) {
-    for (const row of dependencies) {
-      for (const prereq of row) {
-        inDegrees[prereq] = (inDegrees[prereq] || 0) + 1;
+  const visited: { [key: string]: boolean } = {};
+  const schedule: PlannerUserScheduleSemesterType[] = [];
+
+  // Initialize Semester 0 for exempted courses
+  const semesterZero: string[] = [];
+
+  // Build graph and inDegrees
+  planData.forEach((course) => {
+    if (course.exempted) {
+      semesterZero.push(course.code);
+      visited[course.code] = true; // Mark exempted courses as visited
+    } else {
+      graph[course.code] = [];
+      visited[course.code] = false;
+
+      if (course.prerequisites) {
+        console.log("code :", course.code);
+        const prerequisites = processPrerequisites(course.prerequisites); // Ensure this returns string[]
+
+        console.log("prerequisites :", prerequisites);
+        graph[course.code] = prerequisites;
+        prerequisites.forEach((prereq) => {
+          inDegrees[prereq] = (inDegrees[prereq] || 0) + 1;
+        });
       }
     }
+  });
+
+  // Add exempted courses to schedule as Semester 0
+  if (semesterZero.length > 0) {
+    schedule.push({
+      order: -1,
+      name: "Exempted",
+      courses: semesterZero,
+      mark_complete: true, // Assuming exempted courses are completed
+    });
   }
 
-  const recurse = (
-    graph: { [key: string]: string[][] },
-    visited: { [key: string]: number },
-    inDegrees: { [key: string]: number },
-    creditMax: number,
-    csCreditMax: number,
-    courseJson: CourseDict,
-  ) => {
-    if (!Object.values(inDegrees).some((value) => value > 0)) return;
+  const canSchedule = (courseCode: string) => {
+    return !visited[courseCode] && (inDegrees[courseCode] || 0) === 0;
+  };
 
-    const nodes = Object.fromEntries(
-      Object.entries(graph).filter(
-        ([course]) => visited[course] === 0 && (inDegrees[course] || 0) === 0,
-      ),
-    );
-
-    const selected: { [key: string]: string[][] } = {};
-
-    const selectCourses = (maxCsReached: boolean) => {
-      while (Object.keys(nodes).length > 0) {
-        const course = Object.keys(nodes).pop()!;
-        const dependencies = nodes[course];
-        delete nodes[course];
-
-        const proposedHours =
-          creditSum(Object.keys(selected), courseJson) +
-          courseJson[course].credits;
-        const proposedCsHours =
-          csCreditSum(Object.keys(selected), courseJson) +
-          (courseJson[course].department === "CS"
-            ? courseJson[course].credits
-            : 0);
-
-        if (proposedHours > creditMax) break;
-        if (!maxCsReached && proposedCsHours > csCreditMax) continue;
-        if (maxCsReached && courseJson[course].department === "CS") continue;
-
-        selected[course] = dependencies;
-        if (proposedHours >= creditMax) break;
-      }
-    };
-
-    selectCourses(false); // First pass: select courses, respecting CS credit limit
-
-    if (creditSum(Object.keys(selected), courseJson) < creditMax) {
-      selectCourses(true); // Second pass: select non-CS courses if there is still room
-    }
-
+  // Function to recursively fill the schedule
+  const recurse = (semesterIndex: number) => {
     const semester: string[] = [];
-    for (const [course, dependencies] of Object.entries(selected)) {
-      semester.push(course);
-      visited[course] = 1;
-      for (const row of dependencies) {
-        for (const dep of row) {
-          inDegrees[dep] -= 1;
+    let semesterCredits = 0;
+    let semesterCsCredits = 0;
+
+    for (const courseCode of Object.keys(graph)) {
+      if (canSchedule(courseCode)) {
+        const course = planData.find((c) => c.code === courseCode)!;
+        const newSemesterCredits = semesterCredits + course.credits;
+        const newSemesterCsCredits =
+          semesterCsCredits +
+          (course.courseType === "Core Foundation" ? course.credits : 0);
+
+        if (
+          newSemesterCredits <= maxCredit &&
+          newSemesterCsCredits <= maxCsCredit
+        ) {
+          semester.push(courseCode);
+          semesterCredits = newSemesterCredits;
+          semesterCsCredits = newSemesterCsCredits;
+          visited[courseCode] = true;
+          graph[courseCode].forEach((prereq) => inDegrees[prereq]--);
         }
       }
     }
-    schedule.unshift(semester);
-    recurse(graph, visited, inDegrees, creditMax, csCreditMax, courseJson);
+
+    if (semester.length > 0) {
+      schedule.push({
+        order: semesterIndex + 1, // Adjust order to account for Semester 0
+        name: `Semester ${semesterIndex + 1}`,
+        courses: semester,
+        mark_complete: false,
+      });
+      recurse(semesterIndex + 1);
+    }
   };
 
-  recurse(graph, visited, inDegrees, maxCredit, maxCsCredit, json);
-
+  // Start recursion from Semester 1 if there are exempted courses
+  recurse(0);
   return schedule;
 }

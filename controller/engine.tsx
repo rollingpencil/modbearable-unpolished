@@ -119,22 +119,7 @@ const processCourseData = async (
 };
 
 function cleanCourses(courseArray: PlannerCourseType[]) {
-  // Ensure the array itself isn't null and filter out null or undefined entries
-  if (!courseArray) return []; // If the input array is null/undefined, return an empty array
-
-  const filteredCourses = courseArray.filter((course) => course != null);
-
-  // Validate each course object further to ensure it's a valid object
-  return filteredCourses.filter((course) => {
-    // Check if 'course' is an object and not null or undefined
-    if (typeof course === "object" && course !== null) {
-      return Object.entries(course).every(([key, value]) => {
-        // Ensure no key is null and no value is undefined
-        return key != null && value !== undefined;
-      });
-    }
-    return false; // Exclude anything that is not a valid object
-  });
+  return courseArray.filter((course) => course != null);
 }
 
 // method signature for future implementation
@@ -160,12 +145,13 @@ export const scheduleCourse = async (
   const sortedCourses = topologicalSort(CourseDict);
   console.log("sorted :", sortedCourses);
   const cleanSortedCourses = cleanCourses(sortedCourses);
+  console.log("cleaned sorted coureses :", cleanSortedCourses);
   // schedule the data
-  const suggestedSchedule = generateSchedule(cleanSortedCourses, 20, 16);
+  const suggestedSchedule = generateSchedule(cleanSortedCourses, 20, 12);
   console.log("schedule :", suggestedSchedule);
   // const schedule = scheduleCourse(sortedCourses, maxCredit, maxCoreCredit);
 
-  //jsonData.user_schedule = schedule;
+  jsonData.user_schedule = suggestedSchedule;
   return jsonData;
 };
 
