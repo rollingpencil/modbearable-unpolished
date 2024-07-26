@@ -128,8 +128,8 @@ export const CourseInfoModal = ({
               <ModalBody>
                 <PrerequisiteDiagram
                   course={course}
-                  data={data}
                   courseHashmap={courseHashmap}
+                  data={data}
                 />
               </ModalBody>
               <ModalFooter>

@@ -8,11 +8,11 @@ import {
   Divider,
 } from "@nextui-org/react";
 import { useSortable } from "@dnd-kit/react/sortable";
+import { DragOutlined } from "@ant-design/icons";
 
 import { CourseInfoModal } from "./modalCourseInfo";
 
 import { PlanarDataType, PlannerCourseType } from "@/types";
-import { DragOutlined } from "@ant-design/icons";
 
 type courseCardType = {
   courseInfo: PlannerCourseType;
@@ -58,10 +58,10 @@ export const CourseCard = ({
           </Button>
           <CourseInfoModal
             course={courseInfo}
+            courseHashmap={courseHashmap}
             data={data}
             semOrder={semOrder}
             setData={setData}
-            courseHashmap={courseHashmap}
           />
         </span>
       </CardHeader>

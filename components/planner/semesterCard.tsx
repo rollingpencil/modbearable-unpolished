@@ -103,12 +103,12 @@ export const SemesterCard = ({
             return (
               <CourseCard
                 key={courseCode}
+                courseHashmap={refmap}
                 courseInfo={augmentedCourse}
                 data={data}
                 index={semester.courses.indexOf(courseCode)}
                 semOrder={semester.order}
                 setData={setData}
-                courseHashmap={refmap}
               />
             );
           })
