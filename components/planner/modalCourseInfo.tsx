@@ -117,7 +117,7 @@ export const CourseInfoModal = ({
                     <Chip
                       key={semOffered}
                       className="mx-1"
-                      color="default"
+                      color="secondary"
                       variant="shadow"
                     >
                       Sem {semOffered}
