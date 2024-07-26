@@ -85,7 +85,7 @@ export const CourseCard = ({
             key={semOffered}
             className="mx-1"
             color="default"
-            variant="solid"
+            variant="flat"
           >
             Sem {semOffered}
           </Chip>
