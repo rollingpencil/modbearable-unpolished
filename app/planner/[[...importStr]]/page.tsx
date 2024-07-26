@@ -8,7 +8,7 @@ import { BuildOutlined, DiffOutlined, SaveOutlined } from "@ant-design/icons";
 import { dependencyCheck, processJsonDataSimple } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
-import { PlanarDataType, PlannerCourseType } from "@/types";
+import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
 import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
 import { AddCourseModal } from "@/components/planner/modalCourseAdd";
 import { redirectToOnboarding } from "@/app/actions";
@@ -27,6 +27,7 @@ export default function PlannerPage({
   const [message, setMessage] = useState<GeneralNoticeModalMessage | null>(
     null,
   );
+  const [courseError, setCourseError] = useState<Map<string, string[]>>();
   const [temp, setTemp] = useState<boolean>(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
   const [courseHashmap, setCourseHashmap] = useState<Map<
@@ -148,7 +149,7 @@ export default function PlannerPage({
   };
 
   const handleValidate = () => {
-    dependencyCheck(data, setData, courseHashmap, setMessage);
+    dependencyCheck(data, courseHashmap, setCourseError, setMessage);
   };
 
   const handleSchedule = () => {};
@@ -277,23 +278,25 @@ export default function PlannerPage({
       </div>
 
       <div className="flex w-full h-svh overflow-x-auto flex-1">
-        <DragDropProvider onDragOver={handleDragOver}>
-          {data == null || courseHashmap == null || status == false ? (
-            <></>
-          ) : (
-            data.user_schedule.map((sem) => {
-              return (
-                <SemesterCard
-                  key={sem.order}
-                  data={data}
-                  refmap={courseHashmap}
-                  semester={sem}
-                  setData={setData}
-                />
-              );
-            })
-          )}
-        </DragDropProvider>
+        <CourseErrorContext.Provider value={courseError!}>
+          <DragDropProvider onDragOver={handleDragOver}>
+            {data == null || courseHashmap == null || status == false ? (
+              <></>
+            ) : (
+              data.user_schedule.map((sem) => {
+                return (
+                  <SemesterCard
+                    key={sem.order}
+                    data={data}
+                    refmap={courseHashmap}
+                    semester={sem}
+                    setData={setData}
+                  />
+                );
+              })
+            )}
+          </DragDropProvider>
+        </CourseErrorContext.Provider>
       </div>
     </>
   );

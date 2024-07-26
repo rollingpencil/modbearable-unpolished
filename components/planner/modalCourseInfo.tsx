@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Modal,
   ModalContent,
@@ -15,6 +15,7 @@ import { InfoOutlined } from "@ant-design/icons";
 import { PrerequisiteDiagram } from "./prereqDiagram";
 
 import {
+  CourseErrorContext,
   PlanarDataType,
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
@@ -37,11 +38,13 @@ export const CourseInfoModal = ({
 }: CourseInfoModalProps) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
+  const courseError = useContext(CourseErrorContext);
+
   const handleDeleteCourse = () => {
     let updated_user_schedule: PlannerUserScheduleSemesterType[] =
       data.user_schedule;
 
-    updated_user_schedule.forEach((sem, index, _2) => {
+    updated_user_schedule.forEach((sem, index) => {
       if (sem.order == semOrder) {
         let modified_sem: PlannerUserScheduleSemesterType = sem;
         const newSemCourses = sem.courses.filter((c) => c != course.code);
@@ -123,6 +126,20 @@ export const CourseInfoModal = ({
                       Sem {semOffered}
                     </Chip>
                   ))}
+                  {courseError != undefined && courseError.has(course.code) ? (
+                    courseError.get(course.code)!.map((err) => (
+                      <Chip
+                        key={err}
+                        className="mx-1"
+                        color="danger"
+                        variant="solid"
+                      >
+                        {err}
+                      </Chip>
+                    ))
+                  ) : (
+                    <></>
+                  )}
                 </span>
               </ModalHeader>
               <ModalBody>

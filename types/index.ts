@@ -1,4 +1,4 @@
-import { SVGProps } from "react";
+import { createContext, SVGProps } from "react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -37,7 +37,6 @@ export type PlannerCourseType = {
   prerequisites?: any | null;
   semestersOffered?: number[];
   fulfillRequirements?: string[];
-  errorMessage?: string[];
 };
 
 export type PlannerUserScheduleSemesterType = {
@@ -63,3 +62,5 @@ export type RetrieveSpecificModsType = {
   semesterData: { semester: number; timetable: any }[];
   fulfillRequirements: string[];
 };
+
+export const CourseErrorContext = createContext(new Map<string, string[]>());

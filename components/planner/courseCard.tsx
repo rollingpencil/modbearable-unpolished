@@ -12,7 +12,8 @@ import { DragOutlined } from "@ant-design/icons";
 
 import { CourseInfoModal } from "./modalCourseInfo";
 
-import { PlanarDataType, PlannerCourseType } from "@/types";
+import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
+import { useContext } from "react";
 
 type courseCardType = {
   courseInfo: PlannerCourseType;
@@ -38,6 +39,8 @@ export const CourseCard = ({
     type: "course",
     accept: ["course"],
   });
+
+  const courseError = useContext(CourseErrorContext);
 
   return (
     <Card ref={ref} className="bg-amber-500 text-white my-3 w-full" shadow="lg">
@@ -90,9 +93,9 @@ export const CourseCard = ({
             Sem {semOffered}
           </Chip>
         ))}
-        {"errorMessage" in courseInfo ? (
-          <Chip color="danger" variant="solid">
-            Dependancy Error!
+        {courseError != undefined && courseError.has(courseInfo.code) ? (
+          <Chip className="mx-1" color="danger" variant="solid">
+            Prerequisite Error
           </Chip>
         ) : (
           <></>

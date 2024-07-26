@@ -43,7 +43,7 @@ export const GeneralNoticeModal = ({ message }: GeneralNoticeModalProps) => {
             <>
               <ModalHeader className="flex flex-col gap-1">Notice</ModalHeader>
               <ModalBody>
-                <pre>{message!.content}</pre>
+                <p>{message!.content}</p>
               </ModalBody>
               <ModalFooter>
                 <Button

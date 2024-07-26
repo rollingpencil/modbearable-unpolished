@@ -278,8 +278,8 @@ export const scheduleCourse = async (
 };
 export const dependencyCheck = async (
   data: PlanarDataType | null,
-  setData: Function,
   courseHashmap: Map<string, PlannerCourseType> | null,
+  setCourseError: Function,
   setMessage: Function,
 ) => {
   if (data != null && courseHashmap != null) {
@@ -313,6 +313,7 @@ export const dependencyCheck = async (
     }
 
     console.log(errorLog);
+    setCourseError(errorLog);
 
     if (errorLog.size > 0) {
       let errorMsg = "";
@@ -332,46 +333,6 @@ export const dependencyCheck = async (
         callbackName: "Dismiss",
       });
     }
-
-    const errorCourseCodeList = Array.from(errorLog.keys());
-
-    let modified_base_requirements = data.base_requirements;
-
-    modified_base_requirements.forEach((c, i) => {
-      if (c.code in errorCourseCodeList) {
-        let modifiedCourse = c;
-
-        modifiedCourse.errorMessage = errorLog.get(c.code);
-        modified_base_requirements.splice(i, 1, modifiedCourse);
-      }
-    });
-    let modified_non_base_exemptions = data.non_base_exemptions;
-
-    modified_non_base_exemptions.forEach((c, i) => {
-      if (c.code in errorCourseCodeList) {
-        let modifiedCourse = c;
-
-        modifiedCourse.errorMessage = errorLog.get(c.code);
-        modified_non_base_exemptions.splice(i, 1, modifiedCourse);
-      }
-    });
-    let modified_user_defined_courses = data.user_defined_courses;
-
-    modified_user_defined_courses.forEach((c, i) => {
-      if (c.code in errorCourseCodeList) {
-        let modifiedCourse = c;
-
-        modifiedCourse.errorMessage = errorLog.get(c.code);
-        modified_user_defined_courses.splice(i, 1, modifiedCourse);
-      }
-    });
-    console.log(modified_user_defined_courses);
-    setData({
-      ...data,
-      base_requirements: modified_base_requirements,
-      non_base_exemptions: modified_non_base_exemptions,
-      user_defined_courses: modified_user_defined_courses,
-    });
   }
 };
 
