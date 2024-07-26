@@ -90,6 +90,13 @@ export const CourseCard = ({
             Sem {semOffered}
           </Chip>
         ))}
+        {"errorMessage" in courseInfo ? (
+          <Chip color="danger" variant="solid">
+            Dependancy Error!
+          </Chip>
+        ) : (
+          <></>
+        )}
       </CardFooter>
     </Card>
   );

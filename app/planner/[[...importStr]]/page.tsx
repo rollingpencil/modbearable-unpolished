@@ -1,11 +1,11 @@
 "use client";
 
 import { DragDropProvider } from "@dnd-kit/react";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
-import { SaveOutlined } from "@ant-design/icons";
+import { BuildOutlined, DiffOutlined, SaveOutlined } from "@ant-design/icons";
 
-import { processJsonDataSimple } from "@/controller/engine";
+import { dependencyCheck, processJsonDataSimple } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
@@ -147,8 +147,11 @@ export default function PlannerPage({
     window.location = "/planner" as unknown as Location;
   };
 
-  const handleValidate = (event: any) => {};
-  const handleSchedule = (event: any) => {};
+  const handleValidate = () => {
+    dependencyCheck(data, setData, courseHashmap, setMessage);
+  };
+
+  const handleSchedule = () => {};
 
   useEffect(() => {
     if (data != null && status == false) {
@@ -226,6 +229,26 @@ export default function PlannerPage({
             </span>
 
             <span className="ml-auto">
+              <Button
+                className="capitalize mx-2"
+                color="warning"
+                size="lg"
+                startContent={<BuildOutlined />}
+                variant="flat"
+                onPress={handleSchedule}
+              >
+                Schedule
+              </Button>
+              <Button
+                className="capitalize mx-2"
+                color="warning"
+                size="lg"
+                startContent={<DiffOutlined />}
+                variant="flat"
+                onPress={handleValidate}
+              >
+                Validate
+              </Button>
               {temp ? (
                 <Button
                   className="capitalize mx-2"

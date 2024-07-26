@@ -37,13 +37,13 @@ export const GeneralNoticeModal = ({ message }: GeneralNoticeModalProps) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal size="2xl" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
             <>
               <ModalHeader className="flex flex-col gap-1">Notice</ModalHeader>
               <ModalBody>
-                <p>{message!.content}</p>
+                <pre>{message!.content}</pre>
               </ModalBody>
               <ModalFooter>
                 <Button

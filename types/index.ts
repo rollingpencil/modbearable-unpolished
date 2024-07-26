@@ -37,6 +37,7 @@ export type PlannerCourseType = {
   prerequisites?: any | null;
   semestersOffered?: number[];
   fulfillRequirements?: string[];
+  errorMessage?: string[];
 };
 
 export type PlannerUserScheduleSemesterType = {

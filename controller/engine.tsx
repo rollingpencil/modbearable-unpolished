@@ -112,15 +112,6 @@ const processCourseData = async (
     };
   }
 };
-// method signature for future implementation
-const scheduleCourse = async (
-  jsonData: PlanarDataType,
-  setData: Function,
-) => {};
-const dependencyCheck = async (
-  jsonData: PlanarDataType,
-  setData: Function,
-) => {};
 
 export const processJsonData = async (
   jsonData: PlanarDataType,
@@ -195,12 +186,6 @@ export const processJsonDataSimple = async (
   setData: Function,
   setStatus: Function,
 ) => {
-  const masterCourseList = [
-    ...data.base_requirements,
-    ...data.non_base_exemptions,
-    ...data.user_defined_courses,
-  ];
-
   console.log("Populating Prerequisite Data Tree");
 
   const newBR: PlannerCourseType[] = await Promise.all(
@@ -279,4 +264,209 @@ export const processJsonDataSimple = async (
     user_defined_courses: newUDC,
   });
   setStatus(true);
+};
+
+export const scheduleCourse = async (
+  data: PlanarDataType | null,
+  setData: Function,
+) => {
+  const masterCourseList = [
+    ...data!.base_requirements,
+    ...data!.non_base_exemptions,
+    ...data!.user_defined_courses,
+  ];
+};
+export const dependencyCheck = async (
+  data: PlanarDataType | null,
+  setData: Function,
+  courseHashmap: Map<string, PlannerCourseType> | null,
+  setMessage: Function,
+) => {
+  if (data != null && courseHashmap != null) {
+    if (data.user_schedule.length < 1) {
+      //Schedule is either empty or only contains exemptions
+      return;
+    }
+
+    let limitedHashmap = new Map<string, PlannerCourseType>();
+
+    let errorLog = new Map<string, string[]>();
+
+    for (let i = 1; i < data.user_schedule.length; i++) {
+      const lastSem = data.user_schedule[i - 1];
+
+      for (const semCourseCode of lastSem.courses) {
+        limitedHashmap.set(semCourseCode, courseHashmap.get(semCourseCode)!);
+      }
+      console.log(limitedHashmap);
+      const currentSem = data.user_schedule[i];
+
+      for (const semCourseCode of currentSem.courses) {
+        processPrereq(
+          limitedHashmap,
+          semCourseCode,
+          courseHashmap.get(semCourseCode)!.prerequisites,
+          false,
+          errorLog,
+        );
+      }
+    }
+
+    console.log(errorLog);
+
+    if (errorLog.size > 0) {
+      let errorMsg = "";
+
+      for (const [courseCode, errorArr] of errorLog) {
+        for (const errStr of errorArr) {
+          errorMsg = errorMsg.concat(`${courseCode}: ${errStr}\n`);
+        }
+      }
+      console.log(errorMsg);
+      setMessage({
+        type: "warning",
+        content: errorMsg,
+        callback: () => {
+          setMessage(null);
+        },
+        callbackName: "Dismiss",
+      });
+    }
+
+    const errorCourseCodeList = Array.from(errorLog.keys());
+
+    let modified_base_requirements = data.base_requirements;
+
+    modified_base_requirements.forEach((c, i) => {
+      if (c.code in errorCourseCodeList) {
+        let modifiedCourse = c;
+
+        modifiedCourse.errorMessage = errorLog.get(c.code);
+        modified_base_requirements.splice(i, 1, modifiedCourse);
+      }
+    });
+    let modified_non_base_exemptions = data.non_base_exemptions;
+
+    modified_non_base_exemptions.forEach((c, i) => {
+      if (c.code in errorCourseCodeList) {
+        let modifiedCourse = c;
+
+        modifiedCourse.errorMessage = errorLog.get(c.code);
+        modified_non_base_exemptions.splice(i, 1, modifiedCourse);
+      }
+    });
+    let modified_user_defined_courses = data.user_defined_courses;
+
+    modified_user_defined_courses.forEach((c, i) => {
+      if (c.code in errorCourseCodeList) {
+        let modifiedCourse = c;
+
+        modifiedCourse.errorMessage = errorLog.get(c.code);
+        modified_user_defined_courses.splice(i, 1, modifiedCourse);
+      }
+    });
+    console.log(modified_user_defined_courses);
+    setData({
+      ...data,
+      base_requirements: modified_base_requirements,
+      non_base_exemptions: modified_non_base_exemptions,
+      user_defined_courses: modified_user_defined_courses,
+    });
+  }
+};
+
+const processPrereq = (
+  hashmap: Map<string, PlannerCourseType>,
+  currNode: string,
+  childTree: any,
+  subfulfillment: boolean,
+  errorLog: Map<string, string[]>,
+): boolean => {
+  console.log(currNode, childTree);
+  if (childTree != null) {
+    if (typeof childTree == "string") {
+      childTree = { or: [childTree] };
+    }
+
+    if ("and" in childTree) {
+      console.log("and node");
+      let fulfilled: boolean = true;
+
+      childTree.and.forEach((child: any) => {
+        fulfilled =
+          processPrereq(hashmap, currNode, child, subfulfillment, errorLog) &&
+          fulfilled;
+      });
+
+      return fulfilled;
+    }
+
+    if ("or" in childTree) {
+      console.log("or node");
+
+      if (childTree.or.length == 0) {
+        return true;
+      }
+
+      let fulfilled = false;
+
+      for (let i = 0; i < childTree.or.length; i++) {
+        let item = childTree.or[i];
+
+        if (typeof item == "string") {
+          const code = item.slice(0, -2);
+
+          if (hashmap.has(code)) {
+            // Found dependency
+            console.log(`${currNode}: Found ${code}`);
+            fulfilled = true;
+          }
+        } else {
+          // nOf case
+          const subModList = item.nOf[1];
+
+          const formattedSubModList = subModList.map((submod: string) => ({
+            or: [submod],
+          }));
+          const furtherChildTree = { and: formattedSubModList };
+
+          fulfilled =
+            fulfilled ||
+            processPrereq(hashmap, currNode, furtherChildTree, true, errorLog);
+        }
+      }
+
+      if (fulfilled == false && subfulfillment == false) {
+        let errorString = "Missing/Wrong Order: ";
+
+        for (let i = 0; i < childTree.or.length; i++) {
+          let item = childTree.or[i];
+
+          if (typeof item == "string") {
+            errorString = errorString.concat(item.slice(0, -2));
+          } else {
+            const subModList = item.nOf[1].map((submod: string) =>
+              submod.slice(0, -2),
+            );
+
+            errorString = errorString.concat(`[${subModList.toString()}]`);
+          }
+          if (i < childTree.or.length - 1) {
+            errorString = errorString.concat("/");
+          }
+        }
+        if (errorLog.has(currNode)) {
+          errorLog.set(currNode, errorLog.get(currNode)!.concat(currNode));
+        } else {
+          errorLog.set(currNode, [errorString]);
+        }
+      }
+
+      return fulfilled;
+    }
+
+    return false;
+  }
+
+  return true;
 };
