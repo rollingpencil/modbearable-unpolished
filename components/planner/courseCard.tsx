@@ -19,6 +19,7 @@ type courseCardType = {
   semOrder: number;
   index: number;
   data: PlanarDataType;
+  courseHashmap: Map<string, PlannerCourseType> | null;
   setData: Function;
 };
 
@@ -28,6 +29,7 @@ export const CourseCard = ({
   index,
   data,
   setData,
+  courseHashmap,
 }: courseCardType) => {
   const { handleRef, ref } = useSortable({
     id: courseInfo.code,
@@ -59,6 +61,7 @@ export const CourseCard = ({
             data={data}
             semOrder={semOrder}
             setData={setData}
+            courseHashmap={courseHashmap}
           />
         </span>
       </CardHeader>
@@ -66,7 +69,7 @@ export const CourseCard = ({
         <p className="text-md">{courseInfo.name}</p>
       </CardBody>
       <Divider />
-      <CardFooter>
+      <CardFooter className="flex-wrap">
         <Chip className="m-1" color="default" variant="solid">
           {courseInfo.credits} Credits
         </Chip>
@@ -77,6 +80,16 @@ export const CourseCard = ({
         ) : (
           <></>
         )}
+        {courseInfo.semestersOffered!.map((semOffered) => (
+          <Chip
+            key={semOffered}
+            className="mx-1"
+            color="default"
+            variant="solid"
+          >
+            Sem {semOffered}
+          </Chip>
+        ))}
       </CardFooter>
     </Card>
   );

@@ -46,25 +46,29 @@ export default function PlannerPage({
 
   useEffect(() => {
     if (data != null) {
-      let masterCourseList = data.base_requirements.concat(
-        data.non_base_exemptions,
-        data.user_defined_courses,
-      );
-      let masterCourseHashmap = new Map(
-        masterCourseList.map((c) => [c.code, c]),
-      );
+      if (status) {
+        let masterCourseList = [
+          ...data.base_requirements,
+          ...data.non_base_exemptions,
+          ...data.user_defined_courses,
+        ];
+        let masterCourseHashmap = new Map(
+          masterCourseList.map((c) => [c.code, c]),
+        );
 
-      setCourseHashmap(masterCourseHashmap);
+        setCourseHashmap(masterCourseHashmap);
+      } else {
+        setCourseHashmap(null);
+      }
     }
-  }, [data]);
+  }, [data, status]);
 
   const handleValidate = (event: any) => {};
   const handleSchedule = (event: any) => {};
 
   useEffect(() => {
     if (data != null && status == false) {
-      processJsonData(data, setData);
-      setStatus(true);
+      processJsonData(data, setData, setStatus);
     }
   }, [data, status]);
 
@@ -149,7 +153,7 @@ export default function PlannerPage({
 
       <div className="flex w-full h-svh overflow-x-auto flex-1">
         <DragDropProvider onDragOver={handleDragOver}>
-          {data == null || courseHashmap == null ? (
+          {data == null || courseHashmap == null || status == false ? (
             <></>
           ) : (
             data.user_schedule.map((sem) => {

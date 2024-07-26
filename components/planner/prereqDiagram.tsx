@@ -18,6 +18,7 @@ import { PlanarDataType, PlannerCourseType } from "@/types";
 type PrerequisiteDiagramProps = {
   course: PlannerCourseType;
   data: PlanarDataType;
+  courseHashmap: Map<string, PlannerCourseType> | null;
 };
 
 type courseNodeType = {
@@ -206,6 +207,7 @@ const processPrereq = (
 export const PrerequisiteDiagram = ({
   course,
   data,
+  courseHashmap,
 }: PrerequisiteDiagramProps) => {
   const { theme } = useTheme();
 
@@ -215,14 +217,6 @@ export const PrerequisiteDiagram = ({
   const [edges, setEdges] = useState<courseEdgeType[]>([]);
 
   useEffect(() => {
-    let masterCourseHashmap = new Map(
-      [
-        ...data.base_requirements,
-        ...data.non_base_exemptions,
-        ...data.user_defined_courses,
-      ].map((c) => [c.code, c]),
-    );
-
     let x: number = 0;
     let y: number = 0;
 
@@ -244,7 +238,7 @@ export const PrerequisiteDiagram = ({
     ]);
 
     processPrereq(
-      masterCourseHashmap,
+      courseHashmap!,
       nodes,
       setNodes,
       edges,
@@ -252,7 +246,7 @@ export const PrerequisiteDiagram = ({
       x + 50,
       y,
       course.code,
-      masterCourseHashmap.get(course.code)?.prerequisites,
+      course.prerequisites,
     );
   }, [data]);
 

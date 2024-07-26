@@ -121,6 +121,7 @@ const dependencyCheck = async (
 export const processJsonData = async (
   jsonData: PlanarDataType,
   setData: Function,
+  setStatus: Function,
 ) => {
   console.log("Populating Prerequisite Data");
   try {
@@ -176,6 +177,7 @@ export const processJsonData = async (
     jsonData.user_defined_courses = updatedUserDefinedCourses;
 
     setData(jsonData);
+    setStatus(true);
   } catch (error) {
     console.error(
       "Error processing JSON data:",

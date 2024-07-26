@@ -13,7 +13,7 @@ import {
 } from "@/types";
 
 type semesterCardType = {
-  refmap: Map<string, PlannerCourseType>;
+  refmap: Map<string, PlannerCourseType> | null;
   semester: PlannerUserScheduleSemesterType;
   data: PlanarDataType;
   setData: Function;
@@ -108,6 +108,7 @@ export const SemesterCard = ({
                 index={semester.courses.indexOf(courseCode)}
                 semOrder={semester.order}
                 setData={setData}
+                courseHashmap={refmap}
               />
             );
           })

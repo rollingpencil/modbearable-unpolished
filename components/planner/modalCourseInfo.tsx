@@ -25,6 +25,7 @@ type CourseInfoModalProps = {
   setData: Function;
   course: PlannerCourseType;
   semOrder: number;
+  courseHashmap: Map<string, PlannerCourseType> | null;
 };
 
 export const CourseInfoModal = ({
@@ -32,6 +33,7 @@ export const CourseInfoModal = ({
   setData,
   course,
   semOrder,
+  courseHashmap,
 }: CourseInfoModalProps) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
@@ -111,26 +113,24 @@ export const CourseInfoModal = ({
                   ) : (
                     <></>
                   )}
-                  {[
-                    ...data.base_requirements,
-                    ...data.non_base_exemptions,
-                    ...data.user_defined_courses,
-                  ]
-                    .filter((c) => c.code == course.code)[0]
-                    .semestersOffered!.map((semOffered) => (
-                      <Chip
-                        key={semOffered}
-                        className="mx-1"
-                        color="default"
-                        variant="shadow"
-                      >
-                        Sem {semOffered}
-                      </Chip>
-                    ))}
+                  {course.semestersOffered!.map((semOffered) => (
+                    <Chip
+                      key={semOffered}
+                      className="mx-1"
+                      color="default"
+                      variant="shadow"
+                    >
+                      Sem {semOffered}
+                    </Chip>
+                  ))}
                 </span>
               </ModalHeader>
               <ModalBody>
-                <PrerequisiteDiagram course={course} data={data} />
+                <PrerequisiteDiagram
+                  course={course}
+                  data={data}
+                  courseHashmap={courseHashmap}
+                />
               </ModalBody>
               <ModalFooter>
                 <Tooltip
