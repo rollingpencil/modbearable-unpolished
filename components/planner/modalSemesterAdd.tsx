@@ -31,9 +31,8 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
         mark_complete: false,
       };
 
-      let modifiedUserSchedule = data.user_schedule;
+      let modifiedUserSchedule = [...data.user_schedule, newSemester];
 
-      modifiedUserSchedule.push(newSemester);
       setData({ ...data, user_schedule: modifiedUserSchedule });
       setSemName(undefined);
       onClose();

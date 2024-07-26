@@ -61,7 +61,7 @@ export const AddCourseModal = ({
               code: courseCode,
               name: courseInfo.title,
               courseType: courseCode.startsWith("GE") ? "GE" : "Others",
-              credits: courseInfo.moduleCredit,
+              credits: Number(courseInfo.moduleCredit),
               exempted: false,
               wildcard: false,
               add_prerequisites: [],
@@ -148,7 +148,7 @@ export const AddCourseModal = ({
                   onChange={(e) => setSem(Number(e.target.value))}
                 >
                   {data.user_schedule
-                    .filter((sem) => sem.order != 1)
+                    .filter((sem) => sem.order > 0)
                     .map((sem) => (
                       <SelectItem key={sem.order}>{sem.name}</SelectItem>
                     ))}

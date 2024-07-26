@@ -132,7 +132,6 @@ export default function PlannerPage({
                     ...data.user_defined_courses,
                   ]
                     .map((c) => c.credits)
-                    .filter((c) => typeof c === "number")
                     .reduce((a, c) => a + c, 0)}{" "}
                   / {data.total_cu} Required
                 </Chip>
