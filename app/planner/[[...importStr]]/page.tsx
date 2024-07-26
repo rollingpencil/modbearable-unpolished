@@ -1,7 +1,7 @@
 "use client";
 
 import { DragDropProvider } from "@dnd-kit/react";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
 import { BuildOutlined, DiffOutlined, SaveOutlined } from "@ant-design/icons";
 
