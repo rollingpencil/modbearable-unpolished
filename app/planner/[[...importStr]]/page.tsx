@@ -2,21 +2,33 @@
 
 import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
-import { Chip } from "@nextui-org/react";
+import { Button, Chip } from "@nextui-org/react";
 
+import { useRouter } from "next/router";
 import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
 import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
 import { AddCourseModal } from "@/components/planner/modalCourseAdd";
+import { redirectToOnboarding } from "@/app/actions";
+import {
+  GeneralNoticeModal,
+  GeneralNoticeModalMessage,
+} from "@/components/planner/generalNoticeModal";
+import { SaveOutlined } from "@ant-design/icons";
+import { siteConfig } from "@/config/site";
 
 export default function PlannerPage({
   params,
 }: {
   params: { importStr: string };
 }) {
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState<boolean>(false);
+  const [message, setMessage] = useState<GeneralNoticeModalMessage | null>(
+    null,
+  );
+  const [temp, setTemp] = useState<boolean>(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
   const [courseHashmap, setCourseHashmap] = useState<Map<
     string,
@@ -30,15 +42,52 @@ export default function PlannerPage({
         const importString = params.importStr[0];
         const importStringDecoded = decodeURIComponent(importString);
 
+        setTemp(true);
         setData(JSON.parse(atob(importStringDecoded)));
+
+        setMessage({
+          type: "primary",
+          content:
+            "You are viewing someone else's schedule, any modification will result in overwriting your existing local data",
+          callback: () => {
+            setMessage(null);
+          },
+          callbackName: "Dismiss",
+        });
       } else {
         let localStorageData = localStorage.getItem("data");
 
-        if (localStorageData == null) {
-          localStorageData = "";
-        }
         console.log(`From localStorage | ${localStorageData}`);
-        setData(JSON.parse(atob(localStorageData)));
+
+        if (localStorageData == null) {
+          setMessage({
+            type: "warning",
+            content:
+              "It looks like there is no existing data stored. Please head to onboarding page to set it up",
+            callback: () => {
+              redirectToOnboarding();
+              setMessage(null);
+            },
+            callbackName: "Go to Onboarding",
+          });
+          setData(null);
+        } else {
+          try {
+            setData(JSON.parse(atob(localStorageData)));
+          } catch (error) {
+            setMessage({
+              type: "warning",
+              content:
+                "It looks like the data stored is corrupt. Please head to onboarding page to reset the data again.",
+              callback: () => {
+                redirectToOnboarding();
+                setMessage(null);
+              },
+              callbackName: "Go to Onboarding",
+            });
+            setData(null);
+          }
+        }
       }
     }
   }, [data]);
@@ -63,7 +112,7 @@ export default function PlannerPage({
   }, [data, status]);
 
   useEffect(() => {
-    if (data != null && status == true) {
+    if (data != null && status == true && temp == false) {
       console.log("Checking data");
       let localStorageData = localStorage.getItem("data");
 
@@ -77,7 +126,12 @@ export default function PlannerPage({
         localStorage.setItem("data", currentData);
       }
     }
-  }, [data, status]);
+  }, [data, status, temp]);
+
+  const handleSave = () => {
+    setTemp(false);
+    window.location = "/planner" as unknown as Location;
+  };
 
   const handleValidate = (event: any) => {};
   const handleSchedule = (event: any) => {};
@@ -127,6 +181,7 @@ export default function PlannerPage({
 
   return (
     <>
+      <GeneralNoticeModal message={message} />
       <div className="inline-flex w-full items-center">
         {data == null || courseHashmap == null ? (
           <h1 className={title()}>Planner</h1>
@@ -155,6 +210,21 @@ export default function PlannerPage({
             </span>
 
             <span className="ml-auto">
+              {temp ? (
+                <Button
+                  className="capitalize mx-2"
+                  color="warning"
+                  size="lg"
+                  startContent={<SaveOutlined />}
+                  variant="flat"
+                  onPress={handleSave}
+                >
+                  Temporary - Save?
+                </Button>
+              ) : (
+                <></>
+              )}
+
               <AddSemesterModal data={data} setData={setData} />
               <AddCourseModal
                 data={data}
