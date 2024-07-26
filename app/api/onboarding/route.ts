@@ -161,7 +161,10 @@ export async function POST(request: Request) {
 
     let non_base_exemptions = Array.from(apc_course_map).map(([_, v]) => {
       return {
-        ...v,
+        code: v.code,
+        name: v.name,
+        courseType: "Others",
+        credits: v.credit,
         exempted: true,
         wildcard: false,
         creditable: true,
