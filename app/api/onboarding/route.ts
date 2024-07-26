@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 
     let apc_course_map = new Map(apc_course_db.map((c) => [c.code, c]));
 
-    const base_req : PlannerCourseType[] = base_req_db.map((record) => {
+    const base_req: PlannerCourseType[] = base_req_db.map((record) => {
       let br_rec: PlannerCourseType = {
         code: record.course.code,
         name: record.course.name,

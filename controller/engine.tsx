@@ -1,5 +1,9 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
-import { PlannerCourseType, PlanarDataType } from "@/types/";
+import {
+  PlannerCourseType,
+  PlanarDataType,
+  RetrieveSpecificModsType,
+} from "@/types/";
 
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
@@ -184,4 +188,95 @@ export const processJsonData = async (
       error instanceof Error ? error.message : error,
     );
   }
+};
+
+export const processJsonDataSimple = async (
+  data: PlanarDataType,
+  setData: Function,
+  setStatus: Function,
+) => {
+  const masterCourseList = [
+    ...data.base_requirements,
+    ...data.non_base_exemptions,
+    ...data.user_defined_courses,
+  ];
+
+  console.log("Populating Prerequisite Data Tree");
+
+  const newBR: PlannerCourseType[] = await Promise.all(
+    data.base_requirements.map(async (c) => {
+      const {
+        prereqTree,
+        semesterData,
+        fulfillRequirements,
+      }: RetrieveSpecificModsType = await retrieveSpecificMods(
+        data.cohort,
+        c.code,
+        c.wildcard,
+      );
+
+      c.prerequisites = prereqTree;
+      if (prereqTree == null && c.add_prerequisites.length > 0) {
+        c.prerequisites = { or: c.add_prerequisites.map((ap) => `${ap}:D`) };
+      }
+      c.semestersOffered = semesterData.map((so) => so.semester);
+      c.fulfillRequirements = fulfillRequirements;
+
+      return c;
+    }),
+  );
+
+  const newNBE: PlannerCourseType[] = await Promise.all(
+    data.non_base_exemptions.map(async (c) => {
+      const {
+        prereqTree,
+        semesterData,
+        fulfillRequirements,
+      }: RetrieveSpecificModsType = await retrieveSpecificMods(
+        data.cohort,
+        c.code,
+        c.wildcard,
+      );
+
+      c.prerequisites = prereqTree;
+      if (prereqTree == null && c.add_prerequisites.length > 0) {
+        c.prerequisites = { or: c.add_prerequisites.map((ap) => `${ap}:D`) };
+      }
+      c.semestersOffered = semesterData.map((so) => so.semester);
+      c.fulfillRequirements = fulfillRequirements;
+
+      return c;
+    }),
+  );
+
+  const newUDC: PlannerCourseType[] = await Promise.all(
+    data.user_defined_courses.map(async (c) => {
+      const {
+        prereqTree,
+        semesterData,
+        fulfillRequirements,
+      }: RetrieveSpecificModsType = await retrieveSpecificMods(
+        data.cohort,
+        c.code,
+        c.wildcard,
+      );
+
+      c.prerequisites = prereqTree;
+      if (prereqTree == null && c.add_prerequisites.length > 0) {
+        c.prerequisites = { or: c.add_prerequisites.map((ap) => `${ap}:D`) };
+      }
+      c.semestersOffered = semesterData.map((so) => so.semester);
+      c.fulfillRequirements = fulfillRequirements;
+
+      return c;
+    }),
+  );
+
+  setData({
+    ...data,
+    base_requirements: newBR,
+    non_base_exemptions: newNBE,
+    user_defined_courses: newUDC,
+  });
+  setStatus(true);
 };

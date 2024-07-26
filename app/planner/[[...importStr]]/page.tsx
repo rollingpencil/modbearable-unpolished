@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
 import { SaveOutlined } from "@ant-design/icons";
 
-import { processJsonData } from "@/controller/engine";
+import { processJsonDataSimple } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
@@ -152,7 +152,8 @@ export default function PlannerPage({
 
   useEffect(() => {
     if (data != null && status == false) {
-      processJsonData(data, setData, setStatus);
+      // processJsonData(data, setData, setStatus);
+      processJsonDataSimple(data, setData, setStatus);
     }
   }, [data, status]);
 
@@ -216,6 +217,7 @@ export default function PlannerPage({
                     ...data.non_base_exemptions,
                     ...data.user_defined_courses,
                   ]
+                    .filter((c) => c.creditable)
                     .map((c) => c.credits)
                     .reduce((a, c) => a + c, 0)}{" "}
                   / {data.total_cu} Required

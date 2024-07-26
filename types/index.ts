@@ -56,3 +56,9 @@ export type PlanarDataType = {
   user_defined_courses: PlannerCourseType[];
   user_schedule: PlannerUserScheduleSemesterType[];
 };
+
+export type RetrieveSpecificModsType = {
+  prereqTree: any | null;
+  semesterData: { semester: number; timetable: any }[];
+  fulfillRequirements: string[];
+};

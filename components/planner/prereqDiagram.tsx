@@ -47,9 +47,14 @@ const processPrereq = (
   y: number,
   currNode: string,
   childTree: any,
+  subfulfillment: boolean,
 ): boolean => {
   console.log(currNode, childTree);
   if (childTree != null) {
+    if (typeof childTree == "string") {
+      childTree = { or: [childTree] };
+    }
+
     if ("and" in childTree) {
       console.log("and node");
       let fulfilled: boolean = true;
@@ -66,6 +71,7 @@ const processPrereq = (
             y + 100,
             currNode,
             child,
+            subfulfillment,
           ) && fulfilled;
       });
 
@@ -85,7 +91,7 @@ const processPrereq = (
         let item = childTree.or[i];
 
         if (typeof item == "string") {
-          const code = item;
+          const code = item.slice(0, -2);
 
           if (hashmap.has(code)) {
             // setNodes([
@@ -145,13 +151,16 @@ const processPrereq = (
               y,
               currNode,
               item,
+              true,
             );
         } else {
           // nOf case
           const subModList = item.nOf[1];
 
-          subModList.map((submod: string) => ({ or: [submod] }));
-          const furtherChildTree = { and: subModList };
+          const formattedSubModList = subModList.map((submod: string) => ({
+            or: [submod],
+          }));
+          const furtherChildTree = { and: formattedSubModList };
 
           fulfilled =
             fulfilled ||
@@ -165,11 +174,12 @@ const processPrereq = (
               y,
               currNode,
               furtherChildTree,
+              true,
             );
         }
       }
 
-      if (fulfilled == false) {
+      if (fulfilled == false && subfulfillment == false) {
         let errorString = "Missing: ";
 
         for (let i = 0; i < childTree.or.length; i++) {
@@ -197,7 +207,7 @@ const processPrereq = (
           id: errorString,
           position: {
             x: x,
-            y: y + 100,
+            y: y + 150,
           },
           type: "coursechip",
           data: {
@@ -265,6 +275,7 @@ export const PrerequisiteDiagram = ({
       y,
       course.code,
       course.prerequisites,
+      false,
     );
   }, [data]);
 
