@@ -132,6 +132,20 @@ const processPrereq = (
             });
             fulfilled = true;
           }
+        } else if ("and" in item) {
+          fulfilled =
+            fulfilled ||
+            processPrereq(
+              hashmap,
+              nodes,
+              setNodes,
+              edges,
+              setEdges,
+              x,
+              y,
+              currNode,
+              item,
+            );
         } else {
           // nOf case
           const subModList = item.nOf[1];
@@ -162,7 +176,11 @@ const processPrereq = (
           let item = childTree.or[i];
 
           if (typeof item == "string") {
-            errorString = errorString.concat(item);
+            errorString = errorString.concat(item.slice(0, -2));
+          } else if ("and" in item) {
+            const subModList = item.and.map((submod: any) => submod.or[0]);
+
+            errorString = errorString.concat(`[${subModList.toString()}]`);
           } else {
             const subModList = item.nOf[1].map((submod: string) =>
               submod.slice(0, -2),
