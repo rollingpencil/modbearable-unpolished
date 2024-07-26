@@ -102,10 +102,7 @@ export function topologicalSort(courses: CourseDict) {
 
   return stack; //return an object
 }
-const cleanString = (input: string) => {
-  // Trim whitespace and remove leading commas
-  return input.trim().replace(/^,/, "");
-};
+
 const processPrerequisites = (prereqs: Prerequisites | undefined): string[] => {
   let results: string[] = [];
 

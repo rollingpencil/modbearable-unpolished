@@ -140,7 +140,7 @@ export const scheduleCourse = async (
   const cleanSortedCourses = cleanCourses(sortedCourses);
   console.log("cleaned sorted coureses :", cleanSortedCourses);
   // schedule the data
-  const suggestedSchedule = generateSchedule(cleanSortedCourses, 20, 12);
+  const suggestedSchedule = generateSchedule(cleanSortedCourses, 22, 12);
   console.log("schedule :", suggestedSchedule);
   // const schedule = scheduleCourse(sortedCourses, maxCredit, maxCoreCredit);
 
