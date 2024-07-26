@@ -53,7 +53,7 @@ export default function PlannerPage({
           setMessage({
             type: "primary",
             content:
-              "You are viewing someone else's schedule, any modification will result in overwriting your existing local data",
+              "You are viewing an imported schedule, no data would be saved locally until you press save.",
             callback: () => {
               setMessage(null);
             },
@@ -235,9 +235,9 @@ export default function PlannerPage({
               </span>
             </span>
 
-            <span className="ml-auto">
+            <span className="ml-auto w-[45%]">
               <Button
-                className="capitalize mx-2"
+                className="capitalize m-2"
                 color="warning"
                 size="lg"
                 startContent={<BuildOutlined />}
@@ -247,7 +247,7 @@ export default function PlannerPage({
                 Schedule
               </Button>
               <Button
-                className="capitalize mx-2"
+                className="capitalize m-2"
                 color="warning"
                 size="lg"
                 startContent={<DiffOutlined />}
@@ -258,7 +258,7 @@ export default function PlannerPage({
               </Button>
               {temp ? (
                 <Button
-                  className="capitalize mx-2"
+                  className="capitalize m-2"
                   color="warning"
                   size="lg"
                   startContent={<SaveOutlined />}
