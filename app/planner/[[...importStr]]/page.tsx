@@ -235,7 +235,7 @@ export default function PlannerPage({
               </span>
             </span>
 
-            <span className="ml-auto w-[45%]">
+            <span className="ml-auto w-[45%] flex flex-wrap flex-row justify-end items-center">
               <Button
                 className="capitalize m-2"
                 color="warning"
