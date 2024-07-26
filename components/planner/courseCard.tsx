@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardBody,
   CardFooter,
@@ -6,11 +7,12 @@ import {
   Chip,
   Divider,
 } from "@nextui-org/react";
-// import { useSortable } from "@dnd-kit/react/sortable";
+import { useSortable } from "@dnd-kit/react/sortable";
 
 import { CourseInfoModal } from "./modalCourseInfo";
 
 import { PlanarDataType, PlannerCourseType } from "@/types";
+import { DragOutlined } from "@ant-design/icons";
 
 type courseCardType = {
   courseInfo: PlannerCourseType;
@@ -27,26 +29,38 @@ export const CourseCard = ({
   data,
   setData,
 }: courseCardType) => {
-  // const { ref } = useSortable({
-  //   id: courseInfo.code,
-  //   index: index,
-  //   group: semOrder,
-  //   type: "course",
-  //   accept: ["course"],
-  // });
+  const { handleRef, ref } = useSortable({
+    id: courseInfo.code,
+    index: index,
+    group: semOrder,
+    type: "course",
+    accept: ["course"],
+  });
 
   return (
-    <Card className="bg-amber-500 text-white my-3 w-full" shadow="lg">
+    <Card ref={ref} className="bg-amber-500 text-white my-3 w-full" shadow="lg">
       <CardHeader className="flex flex-row gap-3 pb-0">
         <div className="flex ">
           <p className="text-lg">{courseInfo.code}</p>
         </div>
-        <CourseInfoModal
-          course={courseInfo}
-          data={data}
-          semOrder={semOrder}
-          setData={setData}
-        />
+        <span className="ml-auto">
+          <Button
+            ref={handleRef}
+            isIconOnly
+            className="capitalize mx-1"
+            color="default"
+            size="md"
+            variant="shadow"
+          >
+            <DragOutlined />
+          </Button>
+          <CourseInfoModal
+            course={courseInfo}
+            data={data}
+            semOrder={semOrder}
+            setData={setData}
+          />
+        </span>
       </CardHeader>
       <CardBody className="px-3 py-1">
         <p className="text-md">{courseInfo.name}</p>

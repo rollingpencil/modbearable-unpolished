@@ -78,7 +78,7 @@ export const CourseInfoModal = ({
         hideCloseButton={true}
         isOpen={isOpen}
         placement="top-center"
-        size="2xl"
+        size="5xl"
         onClose={onClose}
         onOpenChange={onOpenChange}
       >
