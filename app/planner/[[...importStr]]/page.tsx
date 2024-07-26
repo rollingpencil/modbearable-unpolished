@@ -62,6 +62,23 @@ export default function PlannerPage({
     }
   }, [data, status]);
 
+  useEffect(() => {
+    if (data != null && status == true) {
+      console.log("Checking data");
+      let localStorageData = localStorage.getItem("data");
+
+      if (localStorageData == null) {
+        localStorageData = "";
+      }
+      const currentData = window.btoa(JSON.stringify(data));
+
+      if (currentData != localStorageData) {
+        console.log("Saving to local storage");
+        localStorage.setItem("data", currentData);
+      }
+    }
+  }, [data, status]);
+
   const handleValidate = (event: any) => {};
   const handleSchedule = (event: any) => {};
 
