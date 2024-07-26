@@ -4,6 +4,10 @@ export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
+export type Prerequisites = {
+    or?: (string | Prerequisites)[];
+    and?: (string | Prerequisites)[];
+}
 export type Onboarding = {
   eduBackground: string | undefined;
   mathPrereq?: boolean | undefined;
@@ -25,6 +29,8 @@ export interface InputElement extends Element {
 }
 
 export type PlannerCourseType = {
+  find(arg0: (c: any) => boolean): unknown;
+  forEach(arg0: (course: any) => void): unknown;
   code: string;
   name: string;
   courseType: string;
@@ -49,6 +55,8 @@ export type PlannerUserScheduleSemesterType = {
 };
 
 export type PlanarDataType = {
+  forEach(arg0: (course: any) => void): unknown;
+  find(arg0: (c: any) => boolean): unknown;
   major: string;
   cohort: string;
   total_cu: number;
