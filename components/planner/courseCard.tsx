@@ -50,7 +50,7 @@ export const CourseCard = ({
             className="capitalize mx-1"
             color="default"
             size="md"
-            variant="shadow"
+            variant="solid"
           >
             <DragOutlined />
           </Button>

@@ -68,7 +68,7 @@ export const CourseInfoModal = ({
         className="capitalize ml-auto"
         color="default"
         size="md"
-        variant="shadow"
+        variant="solid"
         onPress={onOpen}
       >
         <InfoOutlined />
@@ -104,6 +104,29 @@ export const CourseInfoModal = ({
                       Not Exempted
                     </Chip>
                   )}
+                  {course.wildcard ? (
+                    <Chip className="mx-1" color="success" variant="shadow">
+                      Wildcard
+                    </Chip>
+                  ) : (
+                    <></>
+                  )}
+                  {[
+                    ...data.base_requirements,
+                    ...data.non_base_exemptions,
+                    ...data.user_defined_courses,
+                  ]
+                    .filter((c) => c.code == course.code)[0]
+                    .semestersOffered!.map((semOffered) => (
+                      <Chip
+                        key={semOffered}
+                        className="mx-1"
+                        color="default"
+                        variant="shadow"
+                      >
+                        Sem {semOffered}
+                      </Chip>
+                    ))}
                 </span>
               </ModalHeader>
               <ModalBody>
