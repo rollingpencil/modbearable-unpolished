@@ -149,7 +149,7 @@ export default function PlannerPage({
   };
 
   const handleValidate = () => {
-    dependencyCheck(data, courseHashmap, setCourseError, setMessage);
+    dependencyCheck(data, courseHashmap, setCourseError);
   };
 
   const handleSchedule = () => {};

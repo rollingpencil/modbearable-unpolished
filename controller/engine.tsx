@@ -280,7 +280,6 @@ export const dependencyCheck = async (
   data: PlanarDataType | null,
   courseHashmap: Map<string, PlannerCourseType> | null,
   setCourseError: Function,
-  setMessage: Function,
 ) => {
   if (data != null && courseHashmap != null) {
     if (data.user_schedule.length < 1) {
@@ -298,7 +297,7 @@ export const dependencyCheck = async (
       for (const semCourseCode of lastSem.courses) {
         limitedHashmap.set(semCourseCode, courseHashmap.get(semCourseCode)!);
       }
-      console.log(limitedHashmap);
+
       const currentSem = data.user_schedule[i];
 
       for (const semCourseCode of currentSem.courses) {
@@ -311,28 +310,7 @@ export const dependencyCheck = async (
         );
       }
     }
-
-    console.log(errorLog);
     setCourseError(errorLog);
-
-    if (errorLog.size > 0) {
-      let errorMsg = "";
-
-      for (const [courseCode, errorArr] of errorLog) {
-        for (const errStr of errorArr) {
-          errorMsg = errorMsg.concat(`${courseCode}: ${errStr}\n`);
-        }
-      }
-      console.log(errorMsg);
-      setMessage({
-        type: "warning",
-        content: errorMsg,
-        callback: () => {
-          setMessage(null);
-        },
-        callbackName: "Dismiss",
-      });
-    }
   }
 };
 

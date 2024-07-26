@@ -9,11 +9,11 @@ import {
 } from "@nextui-org/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { DragOutlined } from "@ant-design/icons";
+import { useContext } from "react";
 
 import { CourseInfoModal } from "./modalCourseInfo";
 
 import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
-import { useContext } from "react";
 
 type courseCardType = {
   courseInfo: PlannerCourseType;
