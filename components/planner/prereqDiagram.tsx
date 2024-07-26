@@ -255,13 +255,17 @@ export const PrerequisiteDiagram = ({
       <ReactFlow
         colorMode={theme as ColorMode}
         edges={edges}
+        edgesFocusable={false}
         edgesReconnectable={false}
         elementsSelectable={false}
         fitView={true}
         nodeTypes={nodeTypes}
         nodes={nodes}
+        nodesConnectable={false}
+        nodesDraggable={false}
+        nodesFocusable={false}
       >
-        <Controls showInteractive={true} />
+        <Controls showInteractive={false} />
         <Background gap={12} size={1} variant={BackgroundVariant.Dots} />
       </ReactFlow>
     </div>

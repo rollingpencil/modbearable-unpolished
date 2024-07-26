@@ -32,7 +32,6 @@ export default function PlannerPage({
 
         setData(JSON.parse(atob(importStringDecoded)));
       } else {
-        // localStorage.getItem("data", btoa(JSON.stringify(data)));
         let localStorageData = localStorage.getItem("data");
 
         if (localStorageData == null) {
@@ -120,11 +119,11 @@ export default function PlannerPage({
               <h1 className={title()}>{data.major} Major</h1>
               <br />
               <span className="ml-1">
-                <Chip color="warning" variant="flat">
+                <Chip className="m-1" color="warning" variant="flat">
                   Cohort: {data.cohort}
                 </Chip>
 
-                <Chip color="warning" variant="flat">
+                <Chip className="m-1" color="warning" variant="flat">
                   Credits Planned{" "}
                   {[
                     ...data.base_requirements,
