@@ -16,6 +16,7 @@ import {
   GeneralNoticeModal,
   GeneralNoticeModalMessage,
 } from "@/components/planner/generalNoticeModal";
+import { DataExportModal } from "@/components/planner/modalExportData";
 
 export default function PlannerPage({
   params,
@@ -229,6 +230,7 @@ export default function PlannerPage({
                 setData={setData}
                 setUpToDate={setStatus}
               />
+              {!temp ? <DataExportModal /> : <></>}
             </span>
           </>
         )}
