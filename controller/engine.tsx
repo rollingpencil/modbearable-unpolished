@@ -349,6 +349,7 @@ export const scheduleCourse = async (
   }
 
   const rejectedCoursesCode = rejectedCourses.map((c) => c.code);
+
   console.log(`Rejected: ${rejectedCoursesCode}`);
 
   const filteredErrorLogs = new Map<string, string[]>();
@@ -490,6 +491,7 @@ const processPrereq = (
             errorString = errorString.concat(item.slice(0, -2));
           } else if ("and" in item) {
             const subModList = item.and.map((submod: any) => submod.or[0]);
+
             errorString = errorString.concat(`[${subModList.toString()}]`);
           } else {
             const subModList = item.nOf[1].map((submod: string) =>
