@@ -31,6 +31,7 @@ export type PlannerCourseType = {
   credits: number;
   exempted: boolean;
   wildcard: boolean;
+  creditable?: boolean;
   add_prerequisites: string[];
   take_together: string[];
   prerequisites?: any | null;

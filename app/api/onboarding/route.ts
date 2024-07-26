@@ -1,7 +1,7 @@
 import { Course, PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-import { Onboarding } from "@/types";
+import { Onboarding, PlannerCourseType } from "@/types";
 
 export const dynamic = "force-dynamic"; // defaults to auto
 
@@ -51,6 +51,18 @@ export async function POST(request: Request) {
       },
     });
 
+    const cohort_data = await prisma.cohort.findUnique({
+      where: {
+        id_majorId: {
+          id: data.cohort!,
+          majorId: data.major!,
+        },
+      },
+      select: {
+        name: true,
+      },
+    });
+
     const base_req_db = await prisma.curriculum.findMany({
       where: {
         majorId: data.major,
@@ -81,14 +93,17 @@ export async function POST(request: Request) {
 
     let apc_course_map = new Map(apc_course_db.map((c) => [c.code, c]));
 
-    const base_req = base_req_db.map((record) => {
-      let br_rec = {
+    const base_req : PlannerCourseType[] = base_req_db.map((record) => {
+      let br_rec: PlannerCourseType = {
         code: record.course.code,
         name: record.course.name,
         courseType: record.type.name,
         credits: record.course.credit,
         exempted: apc_course_map.has(record.course.code),
         wildcard: record.wildcard,
+        creditable: true,
+        add_prerequisites: [],
+        take_together: [],
       };
 
       if (apc_course_map.has(record.course.code)) {
@@ -98,6 +113,7 @@ export async function POST(request: Request) {
       if (br_rec.code == "MA1301") {
         br_rec.exempted =
           data.mathPrereq != undefined ? data.mathPrereq : false;
+        br_rec.creditable = !br_rec.exempted;
       }
 
       if (br_rec.code == "ES1000") {
@@ -105,9 +121,11 @@ export async function POST(request: Request) {
           case 3:
           case 2:
             br_rec.exempted = true;
+            br_rec.creditable = false;
             break;
           case 1:
             br_rec.exempted = false;
+            br_rec.creditable = true;
             break;
         }
       }
@@ -116,12 +134,26 @@ export async function POST(request: Request) {
         switch (data.qet) {
           case 3:
             br_rec.exempted = true;
+            br_rec.creditable = false;
             break;
           case 2:
           case 1:
             br_rec.exempted = false;
+            br_rec.creditable = true;
             break;
         }
+      }
+
+      if (br_rec.code == "ES2660") {
+        br_rec.add_prerequisites.push("ES1103");
+      }
+
+      if (data.eduBackground != "poly" && br_rec.code == "CS2101") {
+        br_rec.take_together.push("CS2103");
+      }
+
+      if (data.eduBackground != "poly" && br_rec.code == "CS2103") {
+        br_rec.take_together.push("CS2101");
       }
 
       return br_rec;
@@ -132,6 +164,9 @@ export async function POST(request: Request) {
         ...v,
         exempted: true,
         wildcard: false,
+        creditable: true,
+        add_prerequisites: [],
+        take_together: [],
       };
     });
 
@@ -140,6 +175,7 @@ export async function POST(request: Request) {
       {
         major: major_data?.name,
         total_cu: major_data?.totalCreditUnit,
+        cohort: cohort_data?.name,
         exempted_math: data.mathPrereq,
         base_requirements: base_req,
         non_base_exemptions: non_base_exemptions,
