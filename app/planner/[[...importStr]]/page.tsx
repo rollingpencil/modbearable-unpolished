@@ -3,8 +3,8 @@
 import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
+import { SaveOutlined } from "@ant-design/icons";
 
-import { useRouter } from "next/router";
 import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
@@ -16,8 +16,6 @@ import {
   GeneralNoticeModal,
   GeneralNoticeModalMessage,
 } from "@/components/planner/generalNoticeModal";
-import { SaveOutlined } from "@ant-design/icons";
-import { siteConfig } from "@/config/site";
 
 export default function PlannerPage({
   params,
