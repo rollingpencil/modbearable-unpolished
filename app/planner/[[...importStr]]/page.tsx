@@ -42,17 +42,32 @@ export default function PlannerPage({
         const importStringDecoded = decodeURIComponent(importString);
 
         setTemp(true);
-        setData(JSON.parse(atob(importStringDecoded)));
 
-        setMessage({
-          type: "primary",
-          content:
-            "You are viewing someone else's schedule, any modification will result in overwriting your existing local data",
-          callback: () => {
-            setMessage(null);
-          },
-          callbackName: "Dismiss",
-        });
+        try {
+          setData(JSON.parse(atob(importStringDecoded)));
+          setMessage({
+            type: "primary",
+            content:
+              "You are viewing someone else's schedule, any modification will result in overwriting your existing local data",
+            callback: () => {
+              setMessage(null);
+            },
+            callbackName: "Dismiss",
+          });
+        } catch (error) {
+          setMessage({
+            type: "warning",
+            content:
+              "It looks like the link you tried contains corrupt data. Please request your friend to resend their link again.",
+            callback: () => {
+              window.location = "/planner" as unknown as Location;
+              setTemp(false);
+              setMessage(null);
+            },
+            callbackName: "Go to local plan",
+          });
+          setData(null);
+        }
       } else {
         let localStorageData = localStorage.getItem("data");
 
