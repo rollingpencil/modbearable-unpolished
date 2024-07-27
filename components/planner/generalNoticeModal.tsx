@@ -37,7 +37,7 @@ export const GeneralNoticeModal = ({ message }: GeneralNoticeModalProps) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} size="2xl" onOpenChange={onOpenChange}>
         <ModalContent>
           {() => (
             <>

@@ -9,10 +9,11 @@ import {
 } from "@nextui-org/react";
 import { useSortable } from "@dnd-kit/react/sortable";
 import { DragOutlined } from "@ant-design/icons";
+import { useContext } from "react";
 
 import { CourseInfoModal } from "./modalCourseInfo";
 
-import { PlanarDataType, PlannerCourseType } from "@/types";
+import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
 
 type courseCardType = {
   courseInfo: PlannerCourseType;
@@ -38,6 +39,8 @@ export const CourseCard = ({
     type: "course",
     accept: ["course"],
   });
+
+  const courseError = useContext(CourseErrorContext);
 
   return (
     <Card ref={ref} className="bg-amber-500 text-white my-3 w-full" shadow="lg">
@@ -90,6 +93,13 @@ export const CourseCard = ({
             Sem {semOffered}
           </Chip>
         ))}
+        {courseError != undefined && courseError.has(courseInfo.code) ? (
+          <Chip className="mx-1" color="danger" variant="solid">
+            Prerequisite Error
+          </Chip>
+        ) : (
+          <></>
+        )}
       </CardFooter>
     </Card>
   );

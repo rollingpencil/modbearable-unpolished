@@ -1,4 +1,4 @@
-import { SVGProps } from "react";
+import { createContext, SVGProps } from "react";
 
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
@@ -31,6 +31,7 @@ export type PlannerCourseType = {
   credits: number;
   exempted: boolean;
   wildcard: boolean;
+  creditable?: boolean;
   add_prerequisites: string[];
   take_together: string[];
   prerequisites?: any | null;
@@ -55,3 +56,11 @@ export type PlanarDataType = {
   user_defined_courses: PlannerCourseType[];
   user_schedule: PlannerUserScheduleSemesterType[];
 };
+
+export type RetrieveSpecificModsType = {
+  prereqTree: any | null;
+  semesterData: { semester: number; timetable: any }[];
+  fulfillRequirements: string[];
+};
+
+export const CourseErrorContext = createContext(new Map<string, string[]>());

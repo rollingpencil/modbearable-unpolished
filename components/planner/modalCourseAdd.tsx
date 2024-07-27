@@ -102,7 +102,7 @@ export const AddCourseModal = ({
   return (
     <>
       <Button
-        className="capitalize mx-2"
+        className="capitalize m-2"
         color="warning"
         size="lg"
         startContent={<PlusOutlined />}

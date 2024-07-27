@@ -3,12 +3,16 @@
 import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
 import { Button, Chip } from "@nextui-org/react";
-import { SaveOutlined } from "@ant-design/icons";
+import { BuildOutlined, DiffOutlined, SaveOutlined } from "@ant-design/icons";
 
-import { processJsonData } from "@/controller/engine";
+import {
+  dependencyCheck,
+  processJsonDataSimple,
+  scheduleCourse,
+} from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
-import { PlanarDataType, PlannerCourseType } from "@/types";
+import { CourseErrorContext, PlanarDataType, PlannerCourseType } from "@/types";
 import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
 import { AddCourseModal } from "@/components/planner/modalCourseAdd";
 import { redirectToOnboarding } from "@/app/actions";
@@ -27,6 +31,7 @@ export default function PlannerPage({
   const [message, setMessage] = useState<GeneralNoticeModalMessage | null>(
     null,
   );
+  const [courseError, setCourseError] = useState<Map<string, string[]>>();
   const [temp, setTemp] = useState<boolean>(false);
   const [data, setData] = useState<PlanarDataType | null>(null);
   const [courseHashmap, setCourseHashmap] = useState<Map<
@@ -48,7 +53,7 @@ export default function PlannerPage({
           setMessage({
             type: "primary",
             content:
-              "You are viewing someone else's schedule, any modification will result in overwriting your existing local data",
+              "You are viewing an imported schedule, no data would be saved locally until you press save.",
             callback: () => {
               setMessage(null);
             },
@@ -147,12 +152,24 @@ export default function PlannerPage({
     window.location = "/planner" as unknown as Location;
   };
 
-  const handleValidate = (event: any) => {};
-  const handleSchedule = (event: any) => {};
+  const handleValidate = () => {
+    dependencyCheck(data, courseHashmap, setCourseError);
+  };
+
+  const handleSchedule = () => {
+    scheduleCourse(data, setData, setCourseError);
+  };
+
+  useEffect(() => {
+    if (data != null && status == true && data.user_schedule.length == 0) {
+      handleSchedule();
+    }
+  });
 
   useEffect(() => {
     if (data != null && status == false) {
-      processJsonData(data, setData, setStatus);
+      // processJsonData(data, setData, setStatus);
+      processJsonDataSimple(data, setData, setStatus);
     }
   }, [data, status]);
 
@@ -216,6 +233,7 @@ export default function PlannerPage({
                     ...data.non_base_exemptions,
                     ...data.user_defined_courses,
                   ]
+                    .filter((c) => c.creditable)
                     .map((c) => c.credits)
                     .reduce((a, c) => a + c, 0)}{" "}
                   / {data.total_cu} Required
@@ -223,10 +241,30 @@ export default function PlannerPage({
               </span>
             </span>
 
-            <span className="ml-auto">
+            <span className="ml-auto w-[45%] flex flex-wrap flex-row justify-end items-center">
+              <Button
+                className="capitalize m-2"
+                color="warning"
+                size="lg"
+                startContent={<BuildOutlined />}
+                variant="flat"
+                onPress={handleSchedule}
+              >
+                Schedule
+              </Button>
+              <Button
+                className="capitalize m-2"
+                color="warning"
+                size="lg"
+                startContent={<DiffOutlined />}
+                variant="flat"
+                onPress={handleValidate}
+              >
+                Validate
+              </Button>
               {temp ? (
                 <Button
-                  className="capitalize mx-2"
+                  className="capitalize m-2"
                   color="warning"
                   size="lg"
                   startContent={<SaveOutlined />}
@@ -252,23 +290,25 @@ export default function PlannerPage({
       </div>
 
       <div className="flex w-full h-svh overflow-x-auto flex-1">
-        <DragDropProvider onDragOver={handleDragOver}>
-          {data == null || courseHashmap == null || status == false ? (
-            <></>
-          ) : (
-            data.user_schedule.map((sem) => {
-              return (
-                <SemesterCard
-                  key={sem.order}
-                  data={data}
-                  refmap={courseHashmap}
-                  semester={sem}
-                  setData={setData}
-                />
-              );
-            })
-          )}
-        </DragDropProvider>
+        <CourseErrorContext.Provider value={courseError!}>
+          <DragDropProvider onDragOver={handleDragOver}>
+            {data == null || courseHashmap == null || status == false ? (
+              <></>
+            ) : (
+              data.user_schedule.map((sem) => {
+                return (
+                  <SemesterCard
+                    key={sem.order}
+                    data={data}
+                    refmap={courseHashmap}
+                    semester={sem}
+                    setData={setData}
+                  />
+                );
+              })
+            )}
+          </DragDropProvider>
+        </CourseErrorContext.Provider>
       </div>
     </>
   );
