@@ -161,6 +161,12 @@ export default function PlannerPage({
   };
 
   useEffect(() => {
+    if (data != null && status == true && data.user_schedule.length == 0) {
+      handleSchedule();
+    }
+  });
+
+  useEffect(() => {
     if (data != null && status == false) {
       // processJsonData(data, setData, setStatus);
       processJsonDataSimple(data, setData, setStatus);
