@@ -1,13 +1,7 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
-import {
-  PlannerCourseType,
-  PlanarDataType,
-  RetrieveSpecificModsType,
-  PlannerUserScheduleSemesterType,
-} from "@/types/";
+import { PlannerCourseType, PlanarDataType } from "@/types/";
 import { topologicalSort, generateSchedule, convertToDict } from "./algorithm";
 import { Corben } from "next/font/google";
-
 type CourseDict = { [key: string]: PlannerCourseType };
 
 const fetchAndFilterPrerequisites = async (
@@ -117,7 +111,6 @@ const processCourseData = async (
     };
   }
 };
-
 function cleanCourses(courseArray: PlannerCourseType[]) {
   return courseArray.filter((course) => course != null);
 }
