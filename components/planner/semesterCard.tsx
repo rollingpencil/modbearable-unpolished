@@ -1,13 +1,22 @@
 import { useDroppable } from "@dnd-kit/react";
 import { CollisionPriority } from "@dnd-kit/abstract";
+import { Chip } from "@nextui-org/react";
+import { useEffect, useState } from "react";
 
 import { CourseCard } from "./courseCard";
+import { ModifySemesterModal } from "./modalSemesterModify";
 
-import { PlannerCourseType, PlannerUserScheduleSemesterType } from "@/types";
+import {
+  PlanarDataType,
+  PlannerCourseType,
+  PlannerUserScheduleSemesterType,
+} from "@/types";
 
 type semesterCardType = {
-  refmap: Map<string, PlannerCourseType>;
+  refmap: Map<string, PlannerCourseType> | null;
   semester: PlannerUserScheduleSemesterType;
+  data: PlanarDataType;
+  setData: Function;
 };
 
 let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
@@ -21,7 +30,12 @@ let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
   take_together: [],
 };
 
-export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
+export const SemesterCard = ({
+  refmap,
+  semester,
+  data,
+  setData,
+}: semesterCardType) => {
   const { ref: dropRef } = useDroppable({
     id: semester.order,
     type: "semester",
@@ -29,10 +43,48 @@ export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
     collisionPriority: CollisionPriority.Low,
   });
 
+  const [totalSemCU, setTotalSemCU] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    setTotalSemCU(
+      semester.courses
+        .map((c, i, arr) => refmap!.get(c))
+        .map((c, i, arr) => c!.credits)
+        .reduce((a, c) => a + c, 0),
+    );
+  }, [semester, refmap]);
+
   return (
     <div className="w-1/5 min-w-72 h-full px-2">
-      <h3 className="text-2xl px-3">{semester.name}</h3>
-      <div ref={dropRef} className="flex-1 overflow-y-auto h-full">
+      <div className="flex flex-col">
+        <div className="inline-flex flex-row w-full py-1">
+          <h3 className="text-2xl">{semester.name}</h3>
+          <ModifySemesterModal
+            data={data}
+            semester={semester}
+            setData={setData}
+          />
+        </div>
+        <span className="flex-row flex-wrap">
+          {totalSemCU == undefined ? (
+            <></>
+          ) : (
+            <Chip className="mx-1" color="default" variant="dot">
+              {totalSemCU} Credits
+            </Chip>
+          )}
+          {semester.mark_complete ? (
+            <Chip className="mx-1" color="success" variant="dot">
+              Done
+            </Chip>
+          ) : (
+            <Chip className="mx-1" color="secondary" variant="dot">
+              Not Done
+            </Chip>
+          )}
+        </span>
+      </div>
+      <div ref={dropRef} className="flex-1 overflow-y-auto">
         {refmap == null ? (
           <></>
         ) : (
@@ -50,9 +102,12 @@ export const SemesterCard = ({ refmap, semester }: semesterCardType) => {
             return (
               <CourseCard
                 key={courseCode}
+                courseHashmap={refmap}
                 courseInfo={augmentedCourse}
+                data={data}
                 index={semester.courses.indexOf(courseCode)}
                 semOrder={semester.order}
+                setData={setData}
               />
             );
           })

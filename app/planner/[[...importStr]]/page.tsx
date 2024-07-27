@@ -2,11 +2,14 @@
 
 import { DragDropProvider } from "@dnd-kit/react";
 import { useEffect, useState } from "react";
+import { Chip } from "@nextui-org/react";
 
 import { processJsonData } from "@/controller/engine";
 import { title } from "@/components/primitives";
 import { SemesterCard } from "@/components/planner/semesterCard";
 import { PlanarDataType, PlannerCourseType } from "@/types";
+import { AddSemesterModal } from "@/components/planner/modalSemesterAdd";
+import { AddCourseModal } from "@/components/planner/modalCourseAdd";
 
 export default function PlannerPage({
   params,
@@ -29,7 +32,6 @@ export default function PlannerPage({
 
         setData(JSON.parse(atob(importStringDecoded)));
       } else {
-        // localStorage.getItem("data", btoa(JSON.stringify(data)));
         let localStorageData = localStorage.getItem("data");
 
         if (localStorageData == null) {
@@ -40,26 +42,32 @@ export default function PlannerPage({
       }
     }
   }, [data]);
+
   useEffect(() => {
     if (data != null) {
-      let masterCourseList = data.base_requirements.concat(
-        data.non_base_exemptions,
-        data.user_defined_courses,
-      );
-      let masterCourseHashmap = new Map(
-        masterCourseList.map((c) => [c.code, c]),
-      );
+      if (status) {
+        let masterCourseList = [
+          ...data.base_requirements,
+          ...data.non_base_exemptions,
+          ...data.user_defined_courses,
+        ];
+        let masterCourseHashmap = new Map(
+          masterCourseList.map((c) => [c.code, c]),
+        );
 
-      setCourseHashmap(masterCourseHashmap);
+        setCourseHashmap(masterCourseHashmap);
+      } else {
+        setCourseHashmap(null);
+      }
     }
-  }, [data]);
+  }, [data, status]);
+
   const handleValidate = (event: any) => {};
   const handleSchedule = (event: any) => {};
 
   useEffect(() => {
     if (data != null && status == false) {
-      processJsonData(data, setData);
-      setStatus(true);
+      processJsonData(data, setData, setStatus);
     }
   }, [data, status]);
 
@@ -102,21 +110,58 @@ export default function PlannerPage({
 
   return (
     <>
-      <div className="inline-block max-w-lg text-center justify-center">
-        <h1 className={title()}>Planner</h1>
+      <div className="inline-flex w-full items-center">
+        {data == null || courseHashmap == null ? (
+          <h1 className={title()}>Planner</h1>
+        ) : (
+          <>
+            <span>
+              <h1 className={title()}>{data.major} Major</h1>
+              <br />
+              <span className="ml-1">
+                <Chip className="m-1" color="warning" variant="flat">
+                  Cohort: {data.cohort}
+                </Chip>
+
+                <Chip className="m-1" color="warning" variant="flat">
+                  Credits Planned{" "}
+                  {[
+                    ...data.base_requirements,
+                    ...data.non_base_exemptions,
+                    ...data.user_defined_courses,
+                  ]
+                    .map((c) => c.credits)
+                    .reduce((a, c) => a + c, 0)}{" "}
+                  / {data.total_cu} Required
+                </Chip>
+              </span>
+            </span>
+
+            <span className="ml-auto">
+              <AddSemesterModal data={data} setData={setData} />
+              <AddCourseModal
+                data={data}
+                setData={setData}
+                setUpToDate={setStatus}
+              />
+            </span>
+          </>
+        )}
       </div>
 
       <div className="flex w-full h-svh overflow-x-auto flex-1">
         <DragDropProvider onDragOver={handleDragOver}>
-          {data == null || courseHashmap == null ? (
+          {data == null || courseHashmap == null || status == false ? (
             <></>
           ) : (
             data.user_schedule.map((sem) => {
               return (
                 <SemesterCard
                   key={sem.order}
+                  data={data}
                   refmap={courseHashmap}
                   semester={sem}
+                  setData={setData}
                 />
               );
             })
