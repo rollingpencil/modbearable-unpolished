@@ -64,6 +64,7 @@ export const AddCourseModal = ({
               credits: Number(courseInfo.moduleCredit),
               exempted: false,
               wildcard: false,
+              creditable: true,
               add_prerequisites: [],
               take_together: [],
             };
