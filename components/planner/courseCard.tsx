@@ -56,6 +56,7 @@ export const CourseCard = ({
             color="default"
             size="md"
             variant="solid"
+            isDisabled={courseInfo.exempted}
           >
             <DragOutlined />
           </Button>
