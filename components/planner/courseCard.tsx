@@ -54,9 +54,9 @@ export const CourseCard = ({
             isIconOnly
             className="capitalize mx-1"
             color="default"
+            isDisabled={courseInfo.exempted}
             size="md"
             variant="solid"
-            isDisabled={courseInfo.exempted}
           >
             <DragOutlined />
           </Button>
