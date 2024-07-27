@@ -26,6 +26,7 @@ let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
   credits: 0,
   exempted: true,
   wildcard: false,
+  creditable: true,
   add_prerequisites: [],
   take_together: [],
 };
@@ -97,6 +98,10 @@ export const SemesterCard = ({
             if (refmap.has(courseCode)) {
               augmentedCourse = refmap.get(courseCode)!;
               // Have to force TypeScript to comply with ! since we alr checked hasmap for said course code
+            }
+
+            if (!augmentedCourse.creditable) {
+              return <></>;
             }
 
             return (
