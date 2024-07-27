@@ -39,6 +39,7 @@ export const SemesterCard = ({
 }: semesterCardType) => {
   const { ref: dropRef } = useDroppable({
     id: semester.order,
+    disabled: semester.order == 0,
     type: "semester",
     accept: ["course"],
     collisionPriority: CollisionPriority.Low,

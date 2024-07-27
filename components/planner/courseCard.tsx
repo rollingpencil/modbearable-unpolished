@@ -38,6 +38,7 @@ export const CourseCard = ({
     group: semOrder,
     type: "course",
     accept: ["course"],
+    disabled: courseInfo.exempted,
   });
 
   const courseError = useContext(CourseErrorContext);
