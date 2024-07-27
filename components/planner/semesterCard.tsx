@@ -49,8 +49,9 @@ export const SemesterCard = ({
   useEffect(() => {
     setTotalSemCU(
       semester.courses
-        .map((c, i, arr) => refmap!.get(c))
-        .map((c, i, arr) => c!.credits)
+        .map((c) => refmap!.get(c))
+        .filter((c) => c!.creditable)
+        .map((c) => c!.credits)
         .reduce((a, c) => a + c, 0),
     );
   }, [semester, refmap]);
