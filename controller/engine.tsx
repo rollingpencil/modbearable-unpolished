@@ -1,5 +1,10 @@
 import { retrieveSpecificMods } from "@/utils/nusmods-client";
-import { PlannerCourseType, PlanarDataType } from "@/types/";
+import {
+  PlannerCourseType,
+  PlanarDataType,
+  RetrieveSpecificModsType,
+  PlannerUserScheduleSemesterType,
+} from "@/types/";
 import { topologicalSort, generateSchedule, convertToDict } from "./algorithm";
 import { Corben } from "next/font/google";
 type CourseDict = { [key: string]: PlannerCourseType };
@@ -116,7 +121,7 @@ function cleanCourses(courseArray: PlannerCourseType[]) {
 }
 
 // method signature for future implementation
-export const scheduleCourse = async (
+export const scheduleCourseTest = async (
   jsonData: PlanarDataType,
   setData: Function,
   maxCredit: number,
