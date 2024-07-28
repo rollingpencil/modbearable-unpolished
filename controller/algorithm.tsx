@@ -10,6 +10,9 @@ import {
 } from "@/types";
 const inDegrees: { [key: string]: number } = {};
 type CourseDict = { [key: string]: PlannerCourseType };
+import TinyQueue from "tinyqueue";
+type InDegreeDict = { [key: string]: number };
+type VisitedDict = { [key: string]: boolean };
 
 export function convertToDict(nodes: PlannerCourseType[]): CourseDict {
   let result: CourseDict = {};
@@ -21,6 +24,7 @@ export function convertToDict(nodes: PlannerCourseType[]): CourseDict {
       code: node.code,
       department,
       name: node.name,
+      dependencies: undefined,
       prerequisites: node.prerequisites,
       credits: node.credits,
       courseType: node.courseType,
@@ -100,39 +104,33 @@ export function topologicalSort(courses: CourseDict) {
   // Reverse the stack to get the correct order of courses
   console.log("Final topological order:", stack);
 
-  return stack; //return an object
+  return stack.reverse(); //return an object
 }
-
-const processPrerequisites = (prereqs: Prerequisites | undefined): string[] => {
+function processPrerequisites(prereqs: any): string[] {
   let results: string[] = [];
 
-  if (prereqs?.or) {
-    // Map 'or' prerequisites and wrap each prerequisite in brackets to indicate a choice
-    let orResults = prereqs.or.map((dep) =>
-      typeof dep === "string"
-        ? `[${dep}]`
-        : processPrerequisites(dep).join(", "),
-    );
-    results.push(...orResults);
-  }
-
-  if (prereqs?.and) {
-    // Map 'and' prerequisites and concatenate directly since all are required
-    let andResults = prereqs.and.map((dep) =>
-      typeof dep === "string" ? dep : processPrerequisites(dep).join(", "),
-    );
-    if (andResults.length > 0) {
-      results.push(andResults.join(","));
+  if (typeof prereqs === "string") {
+    // Splitting by comma to handle combined course codes
+    results = prereqs.split(",").map((code) => code.trim());
+  } else if (Array.isArray(prereqs)) {
+    prereqs.forEach((dep) => {
+      results.push(...processPrerequisites(dep));
+    });
+  } else if (prereqs && typeof prereqs === "object") {
+    if (prereqs.and) {
+      // Flatten and merge results for AND conditions
+      results = prereqs.and.flatMap((dep) => processPrerequisites(dep));
+    }
+    if (prereqs.or) {
+      // Handle OR conditions similarly
+      prereqs.or.forEach((dep) => {
+        results.push(...processPrerequisites(dep));
+      });
     }
   }
 
-  // Correctly handle cleaning up the results to remove leading commas or spaces
-  return results.map((r) => {
-    // Check for leading commas and remove them specifically, preserving all other content
-    return r.replace(/^,\s*/, "");
-  });
-};
-
+  return results;
+}
 export function generateSchedule(
   planData: PlannerCourseType[],
   maxCredit: number,
@@ -142,11 +140,12 @@ export function generateSchedule(
   const inDegrees: { [key: string]: number } = {};
   const visited: { [key: string]: boolean } = {};
   const schedule: PlannerUserScheduleSemesterType[] = [];
-
-  // Initialize Semester 0 for exempted courses
   const semesterZero: string[] = [];
+  const priorityQueue = new TinyQueue<string>(
+    [],
+    (a, b) => inDegrees[a] - inDegrees[b],
+  );
 
-  // Build graph and inDegrees
   planData.forEach((course) => {
     if (course.exempted) {
       semesterZero.push(course.code);
@@ -154,12 +153,8 @@ export function generateSchedule(
     } else {
       graph[course.code] = [];
       visited[course.code] = false;
-
       if (course.prerequisites) {
-        console.log("code :", course.code);
-        const prerequisites = processPrerequisites(course.prerequisites); // Ensure this returns string[]
-
-        console.log("prerequisites :", prerequisites);
+        const prerequisites = processPrerequisites(course.prerequisites);
         graph[course.code] = prerequisites;
         prerequisites.forEach((prereq) => {
           inDegrees[prereq] = (inDegrees[prereq] || 0) + 1;
@@ -168,59 +163,92 @@ export function generateSchedule(
     }
   });
 
-  // Add exempted courses to schedule as Semester 0
+  // Populate priority queue with schedulable courses
+  Object.keys(graph).forEach((course) => {
+    if (
+      !visited[course] &&
+      (inDegrees[course] === 0 || inDegrees[course] === undefined)
+    ) {
+      priorityQueue.push(course);
+    }
+  });
+  // Schedule exempted courses
   if (semesterZero.length > 0) {
     schedule.push({
       order: -1,
       name: "Exempted",
       courses: semesterZero,
-      mark_complete: true, // Assuming exempted courses are completed
+      mark_complete: true,
     });
   }
+  //console.log("PQ :", priorityQueue.data);
 
-  const canSchedule = (courseCode: string) => {
-    return !visited[courseCode] && (inDegrees[courseCode] || 0) === 0;
-  };
-
-  // Function to recursively fill the schedule
-  const recurse = (semesterIndex: number) => {
+  // Begin scheduling process
+  let semesterIndex = 0;
+  while (priorityQueue.length > 0) {
     const semester: string[] = [];
     let semesterCredits = 0;
     let semesterCsCredits = 0;
 
-    for (const courseCode of Object.keys(graph)) {
-      if (canSchedule(courseCode)) {
-        const course = planData.find((c) => c.code === courseCode)!;
-        const newSemesterCredits = semesterCredits + course.credits;
-        const newSemesterCsCredits =
-          semesterCsCredits +
-          (course.courseType === "Core Foundation" ? course.credits : 0);
+    while (priorityQueue.length > 0) {
+      const semester: string[] = [];
+      let semesterCredits = 0;
+      let semesterCsCredits = 0;
 
-        if (
-          newSemesterCredits <= maxCredit &&
-          newSemesterCsCredits <= maxCsCredit
-        ) {
-          semester.push(courseCode);
-          semesterCredits = newSemesterCredits;
-          semesterCsCredits = newSemesterCsCredits;
-          visited[courseCode] = true;
-          graph[courseCode].forEach((prereq) => inDegrees[prereq]--);
+      let attempts = priorityQueue.length; // Prevent infinite loops
+      while (attempts-- > 0 && semesterCredits < maxCredit) {
+        const courseCode = priorityQueue.pop();
+
+        if (!visited[courseCode]) {
+          const course = planData.find((c) => c.code === courseCode);
+          console.log("couse :", course);
+          if (!course) {
+            console.error("Course not found for code:", courseCode);
+            continue; // Skip this iteration if course is not found
+          }
+          const newSemesterCredits = semesterCredits + course.credits;
+          const newSemesterCsCredits =
+            semesterCsCredits +
+            (course.department === "CS" ? course.credits : 0);
+
+          if (
+            newSemesterCredits <= maxCredit &&
+            newSemesterCsCredits <= maxCsCredit
+          ) {
+            semester.push(courseCode);
+            semesterCredits = newSemesterCredits;
+            semesterCsCredits = newSemesterCsCredits;
+            visited[courseCode] = true;
+            graph[courseCode].forEach((prereq) => {
+              inDegrees[prereq]--;
+              if (inDegrees[prereq] === 0 && !visited[prereq]) {
+                priorityQueue.push(prereq);
+              }
+            });
+          } else {
+            // Re-add the course at the end of the queue to try again later
+            priorityQueue.push(courseCode);
+          }
         }
       }
-    }
+      console.log(
+        `Semester ${semesterIndex + 1} scheduled with courses:`,
+        semester,
+      );
+      console.log(`Remaining inDegrees:`, JSON.stringify(inDegrees, null, 2));
+      console.log(`Remaining Courses in Queue:`, priorityQueue.length);
 
-    if (semester.length > 0) {
-      schedule.push({
-        order: semesterIndex + 1, // Adjust order to account for Semester 0
-        name: `Semester ${semesterIndex + 1}`,
-        courses: semester,
-        mark_complete: false,
-      });
-      recurse(semesterIndex + 1);
+      if (semester.length > 0) {
+        schedule.push({
+          order: semesterIndex + 1,
+          name: `Semester ${semesterIndex + 1}`,
+          courses: semester,
+          mark_complete: false,
+        });
+        semesterIndex++;
+      }
     }
-  };
+  }
 
-  // Start recursion from Semester 1 if there are exempted courses
-  recurse(0);
   return schedule;
 }

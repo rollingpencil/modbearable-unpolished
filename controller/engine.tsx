@@ -5,9 +5,16 @@ import {
   RetrieveSpecificModsType,
   PlannerUserScheduleSemesterType,
 } from "@/types/";
-import { topologicalSort, generateSchedule, convertToDict } from "./algorithm";
+import {
+  topologicalSort,
+  generateSchedule,
+  convertToDict,
+  scheduleCourses,
+} from "./algorithm";
 import { Corben } from "next/font/google";
 type CourseDict = { [key: string]: PlannerCourseType };
+type InDegreeDict = { [key: string]: number };
+type VisitedDict = { [key: string]: boolean };
 
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
@@ -147,6 +154,7 @@ export const scheduleCourseTest = async (
   // schedule the data
   const suggestedSchedule = generateSchedule(cleanSortedCourses, 22, 12);
   console.log("schedule :", suggestedSchedule);
+
   // const schedule = scheduleCourse(sortedCourses, maxCredit, maxCoreCredit);
 
   jsonData.user_schedule = suggestedSchedule;
