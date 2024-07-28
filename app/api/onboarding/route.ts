@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid data." }, { status: 400 });
   }
 
+  // Data Integrity check
   let dataIntegrity: boolean = true;
 
   switch (data.eduBackground) {
@@ -40,7 +41,7 @@ export async function POST(request: Request) {
 
   try {
     await prisma.$connect();
-    // Fetch polytechnic data from the database
+    // Fetch major data from the database
     const major_data = await prisma.major.findUnique({
       where: {
         id: data.major,
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
       },
     });
 
+    // Fetch cohort data from the database
     const cohort_data = await prisma.cohort.findUnique({
       where: {
         id_majorId: {
@@ -63,6 +65,7 @@ export async function POST(request: Request) {
       },
     });
 
+    // Fetch major requirements data from the database
     const base_req_db = await prisma.curriculum.findMany({
       where: {
         majorId: data.major,
@@ -75,6 +78,7 @@ export async function POST(request: Request) {
       },
     });
 
+    // Fetch exemption data from the database
     let apc_course_db: Course[] = [];
 
     if ("diploma" in data) {
@@ -110,6 +114,7 @@ export async function POST(request: Request) {
         apc_course_map.delete(record.course.code);
       }
 
+      // Take into account special courses
       if (br_rec.code == "MA1301") {
         br_rec.exempted =
           data.mathPrereq != undefined ? data.mathPrereq : false;

@@ -44,6 +44,7 @@ export const CourseInfoModal = ({
     let updated_user_schedule: PlannerUserScheduleSemesterType[] =
       data.user_schedule;
 
+    // Delete course from planner data
     updated_user_schedule.forEach((sem, index) => {
       if (sem.order == semOrder) {
         let modified_sem: PlannerUserScheduleSemesterType = sem;

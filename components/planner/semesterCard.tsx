@@ -37,6 +37,7 @@ export const SemesterCard = ({
   data,
   setData,
 }: semesterCardType) => {
+  // Creating reference for the dndkit library to work
   const { ref: dropRef } = useDroppable({
     id: semester.order,
     disabled: semester.order == 0,
@@ -47,6 +48,7 @@ export const SemesterCard = ({
 
   const [totalSemCU, setTotalSemCU] = useState<number | undefined>(undefined);
 
+  // Dyanmically calculate the total number of credits per semester
   useEffect(() => {
     setTotalSemCU(
       semester.courses

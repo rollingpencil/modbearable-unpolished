@@ -25,7 +25,7 @@ export async function GET(
 
     await prisma.$connect();
 
-    // Fetch diplomas based on polytechnicId
+    // Fetch cohort based on majorId
     const facultyMajorCohort: CohortType[] = await prisma.cohort.findMany({
       where: {
         majorId: majorIdNum,

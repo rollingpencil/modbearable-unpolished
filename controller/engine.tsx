@@ -189,6 +189,9 @@ export const processJsonDataSimple = async (
 ) => {
   console.log("Populating Prerequisite Data Tree");
 
+  // For each of the section (base_requirements, non_base_exemptions, user_defined_courses)
+  // in planner data, populate each course with prerequisite data retrieve from NUSMods
+
   const newBR: PlannerCourseType[] = await Promise.all(
     data.base_requirements.map(async (c) => {
       const {
@@ -267,6 +270,7 @@ export const processJsonDataSimple = async (
   setStatus(true);
 };
 
+// Function that is invoked to (re)schedule all the courses that fits each mods prerequisite tree.
 export const scheduleCourse = async (
   data: PlanarDataType | null,
   setData: Function,
@@ -323,6 +327,7 @@ export const scheduleCourse = async (
           : 0;
 
         if (count > courseForScheduleCount * 2) {
+          // If a course creates excessive errors, it should have have a missing prerequisite course requried
           rejectedCourses.push(curCourse!);
         } else {
           courseForSchedule.push(curCourse!);
@@ -386,6 +391,8 @@ export const scheduleCourse = async (
     setCourseError,
   );
 };
+
+// Function that is invoked to check if each courses prior current semester allows it to fulfill its prerequisite
 export const dependencyCheck = async (
   data: PlanarDataType | null,
   courseHashmap: Map<string, PlannerCourseType> | null,
@@ -424,6 +431,7 @@ export const dependencyCheck = async (
   }
 };
 
+// Function to recursively traverse the prerequisite tree and check if prerequisites are met.
 const processPrereq = (
   hashmap: Map<string, PlannerCourseType>,
   currNode: string,

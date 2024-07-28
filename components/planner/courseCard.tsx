@@ -32,6 +32,7 @@ export const CourseCard = ({
   setData,
   courseHashmap,
 }: courseCardType) => {
+  // Creating reference for the dndkit library to work
   const { handleRef, ref } = useSortable({
     id: courseInfo.code,
     index: index,
