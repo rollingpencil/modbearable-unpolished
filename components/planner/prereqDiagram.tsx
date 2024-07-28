@@ -37,6 +37,7 @@ type courseEdgeType = {
   target: string;
 };
 
+// Function to recursively traverse the prerequisite tree and check if prerequisites are met.
 const processPrereq = (
   hashmap: Map<string, PlannerCourseType>,
   nodes: courseNodeType[],
@@ -204,6 +205,7 @@ export const PrerequisiteDiagram = ({
   const [nodes, setNodes] = useState<courseNodeType[]>([]);
   const [edges, setEdges] = useState<courseEdgeType[]>([]);
 
+  // Compute the nodes and edges using the above function to create the error checking prerequisite diagram
   useEffect(() => {
     let x: number = 0;
     let y: number = 0;
@@ -272,6 +274,7 @@ type CourseChipNodeProps = {
   isConnectable: boolean;
 };
 
+// Creating a custom node used to display the prerequisite tree
 const CourseChipNode = ({ data, isConnectable }: CourseChipNodeProps) => {
   //   const onChange = useCallback((evt) => {
   //     console.log(evt.target.value);

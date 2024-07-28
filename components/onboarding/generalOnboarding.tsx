@@ -68,6 +68,7 @@ export const GeneralOnboarding = ({
     });
   };
 
+  // Fetch list of institutes
   useEffect(() => {
     fetch("/api/onboarding/institute/")
       .then((res) => res.json())
@@ -76,6 +77,7 @@ export const GeneralOnboarding = ({
       });
   }, []);
 
+  // Fetch list of faculties
   useEffect(() => {
     fetch("/api/onboarding/faculty/")
       .then((res) => res.json())
@@ -84,6 +86,7 @@ export const GeneralOnboarding = ({
       });
   }, []);
 
+  // Fetch list of majors
   useEffect(() => {
     if (faculty != null) {
       fetch(`/api/onboarding/faculty/${faculty}`)
@@ -94,6 +97,7 @@ export const GeneralOnboarding = ({
     }
   }, [faculty]);
 
+  // Fetch list of cohorts of a specific major
   useEffect(() => {
     if (major != null) {
       fetch(`/api/onboarding/majors/${major}`)

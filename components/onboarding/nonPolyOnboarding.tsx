@@ -24,6 +24,7 @@ export const NonPolyOnboarding = ({
     setReady(false);
   };
 
+  // Check if all the data are all valid and set ready to sent to backend.
   useEffect(() => {
     setReady(
       onboarding.eduBackground != undefined &&

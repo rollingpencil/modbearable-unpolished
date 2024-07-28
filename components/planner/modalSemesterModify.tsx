@@ -29,6 +29,7 @@ export const ModifySemesterModal = ({
   const [semName, setSemName] = useState<string | undefined>(undefined);
   const [complete, setComplete] = useState<boolean>(semester.mark_complete);
 
+  // Check if the name of the semester has been changed and if so update the semester name in planner data
   const handleModifySemester = () => {
     if (semName != undefined) {
       semester.name = semName;
@@ -49,6 +50,7 @@ export const ModifySemesterModal = ({
     onClose();
   };
 
+  // Check if there are existing course set under this semester, if none, proceed with delete
   const handleDeleteSemester = () => {
     let updated_user_schedule: PlannerUserScheduleSemesterType[] =
       data.user_schedule;

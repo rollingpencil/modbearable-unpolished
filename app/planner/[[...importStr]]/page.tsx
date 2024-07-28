@@ -39,6 +39,7 @@ export default function PlannerPage({
     PlannerCourseType
   > | null>(null);
 
+  // Handles the import of data from url or local storage.
   useEffect(() => {
     if (data == null) {
       if ("importStr" in params) {
@@ -111,6 +112,8 @@ export default function PlannerPage({
     }
   }, [data]);
 
+  // Updates the hashmap so other components/function can access course
+  // information faster
   useEffect(() => {
     if (data != null) {
       if (status) {
@@ -130,6 +133,7 @@ export default function PlannerPage({
     }
   }, [data, status]);
 
+  //Handles the storing of modifed state data back to local storage
   useEffect(() => {
     if (data != null && status == true && temp == false) {
       console.log("Checking data");
@@ -169,16 +173,17 @@ export default function PlannerPage({
 
   useEffect(() => {
     if (data != null && status == false) {
-      // processJsonData(data, setData, setStatus);
       processJsonDataSimple(data, setData, setStatus);
     }
   }, [data, status]);
 
+  //Function to shift the course from one semester to another whenever ussr drags and drops
   const handleDragOver = (event: any) => {
     const { source, target } = event.operation;
 
     console.log(event.operation);
     if (source && target) {
+      //Find the indexes to swap from the dnd event object
       const srcSem: number = source.sortable.group;
       const srcSemIdx: number = source.sortable.index;
       const course: string = source.id;
@@ -194,6 +199,7 @@ export default function PlannerPage({
         destSemIdx = 0;
       }
 
+      // Perform the swap
       let modifiedUserSchedule = data!.user_schedule;
 
       for (let sem of modifiedUserSchedule) {

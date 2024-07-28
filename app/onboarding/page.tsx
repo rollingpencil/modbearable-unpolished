@@ -27,6 +27,7 @@ export default function OnboardingPage() {
     })
       .then((res) => res.json())
       .then((data) => {
+        // Once the data is retrieved from the backend, convert to base64 and store into local storage.
         // console.log(data);
         // console.log(JSON.stringify(data))
         // console.log(btoa(JSON.stringify(data)))

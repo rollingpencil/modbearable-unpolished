@@ -24,6 +24,7 @@ type GeneralNoticeModalProps = {
 export const GeneralNoticeModal = ({ message }: GeneralNoticeModalProps) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
+  // Check if there is a message to display and if so, display it.
   useEffect(() => {
     if (message != null) {
       onOpen();

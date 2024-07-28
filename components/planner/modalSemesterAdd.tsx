@@ -27,6 +27,7 @@ export const AddSemesterModal = ({
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [semName, setSemName] = useState<string | undefined>(undefined);
 
+  // Handle adding of a new semester to the user_schedule list in planner data
   const handleAddSemester = () => {
     if (semName != undefined) {
       const newSemester: PlannerUserScheduleSemesterType = {

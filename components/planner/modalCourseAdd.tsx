@@ -44,6 +44,7 @@ export const AddCourseModal = ({
         false,
       );
 
+      // Check if existing course already exist
       if (
         data.base_requirements.filter((c) => c.code == courseCode).length +
           data.user_defined_courses.filter((c) => c.code == courseCode).length +
@@ -55,6 +56,8 @@ export const AddCourseModal = ({
         Promise.all([courseInfoPromise])
           .then((rawdata: Array<any>) => {
             setErrorMessage(null);
+
+            // Update planner data with information of the new course
             const courseInfo = rawdata[0];
 
             let newCourseData: PlannerCourseType = {

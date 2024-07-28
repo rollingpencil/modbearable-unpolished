@@ -38,6 +38,7 @@ export const PolyOnboarding = ({
     setOnboarding({ ...onboarding, diploma: e.target.value });
   };
 
+  // Fetch list of polytechnics
   useEffect(() => {
     fetch("/api/onboarding/poly/")
       .then((res) => res.json())
@@ -46,6 +47,7 @@ export const PolyOnboarding = ({
       });
   }, [poly]);
 
+  // Fetch list of polytechnic courses.
   useEffect(() => {
     if (poly != null) {
       fetch(`/api/onboarding/poly/${poly}`)
@@ -56,6 +58,7 @@ export const PolyOnboarding = ({
     }
   }, [poly]);
 
+  // Check if all the data are all valid and set ready to sent to backend.
   useEffect(() => {
     setReady(
       onboarding.eduBackground != undefined &&
