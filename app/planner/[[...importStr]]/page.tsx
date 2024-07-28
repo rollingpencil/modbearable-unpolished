@@ -158,6 +158,7 @@ export default function PlannerPage({
 
   const handleSchedule = () => {
     scheduleCourse(data, setData, setCourseError);
+    dependencyCheck(data, courseHashmap, setCourseError);
   };
 
   useEffect(() => {

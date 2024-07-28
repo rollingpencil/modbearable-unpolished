@@ -40,9 +40,7 @@ type courseEdgeType = {
 const processPrereq = (
   hashmap: Map<string, PlannerCourseType>,
   nodes: courseNodeType[],
-  setNodes: Function,
   edges: courseEdgeType[],
-  setEdges: Function,
   x: number,
   y: number,
   currNode: string,
@@ -64,9 +62,7 @@ const processPrereq = (
           processPrereq(
             hashmap,
             nodes,
-            setNodes,
             edges,
-            setEdges,
             x + index * 400,
             y + 100,
             currNode,
@@ -94,21 +90,6 @@ const processPrereq = (
           const code = item.slice(0, -2);
 
           if (hashmap.has(code)) {
-            // setNodes([
-            //   ...nodes,
-            //   {
-            //     id: code,
-            //     position: {
-            //       x: x,
-            //       y: y,
-            //     },
-            //     type: "coursechip",
-            //     data: {
-            //       status: "success",
-            //       course: hashmap.get(code)!,
-            //     },
-            //   },
-            // ]);
             nodes.push({
               id: code,
               position: {
@@ -123,14 +104,6 @@ const processPrereq = (
               },
             });
 
-            // setEdges([
-            //   ...edges,
-            //   {
-            //     id: `${currNode}-${code}`,
-            //     source: currNode,
-            //     target: code,
-            //   },
-            // ]);
             edges.push({
               id: `${currNode}-${code}`,
               source: currNode,
@@ -141,18 +114,7 @@ const processPrereq = (
         } else if ("and" in item) {
           fulfilled =
             fulfilled ||
-            processPrereq(
-              hashmap,
-              nodes,
-              setNodes,
-              edges,
-              setEdges,
-              x,
-              y,
-              currNode,
-              item,
-              true,
-            );
+            processPrereq(hashmap, nodes, edges, x, y, currNode, item, true);
         } else {
           // nOf case
           const subModList = item.nOf[1];
@@ -167,9 +129,7 @@ const processPrereq = (
             processPrereq(
               hashmap,
               nodes,
-              setNodes,
               edges,
-              setEdges,
               x,
               y,
               currNode,
@@ -248,8 +208,7 @@ export const PrerequisiteDiagram = ({
     let x: number = 0;
     let y: number = 0;
 
-    setNodes([
-      ...nodes,
+    let newNodes: courseNodeType[] = [
       {
         id: course.code,
         position: {
@@ -263,20 +222,23 @@ export const PrerequisiteDiagram = ({
           error: null,
         },
       },
-    ]);
+    ];
+
+    let newEdges: courseEdgeType[] = [];
 
     processPrereq(
       courseHashmap!,
-      nodes,
-      setNodes,
-      edges,
-      setEdges,
+      newNodes,
+      newEdges,
       x + 50,
       y,
       course.code,
       course.prerequisites,
       false,
     );
+
+    setNodes(newNodes);
+    setEdges(newEdges);
   }, [data]);
 
   return (

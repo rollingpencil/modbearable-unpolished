@@ -38,6 +38,7 @@ export const CourseCard = ({
     group: semOrder,
     type: "course",
     accept: ["course"],
+    disabled: courseInfo.exempted,
   });
 
   const courseError = useContext(CourseErrorContext);
@@ -54,6 +55,7 @@ export const CourseCard = ({
             isIconOnly
             className="capitalize mx-1"
             color="default"
+            isDisabled={courseInfo.exempted}
             size="md"
             variant="solid"
           >

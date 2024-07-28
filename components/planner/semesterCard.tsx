@@ -26,6 +26,7 @@ let UNKNOWN_PLANNER_COURSE: PlannerCourseType = {
   credits: 0,
   exempted: true,
   wildcard: false,
+  creditable: true,
   add_prerequisites: [],
   take_together: [],
 };
@@ -38,6 +39,7 @@ export const SemesterCard = ({
 }: semesterCardType) => {
   const { ref: dropRef } = useDroppable({
     id: semester.order,
+    disabled: semester.order == 0,
     type: "semester",
     accept: ["course"],
     collisionPriority: CollisionPriority.Low,
@@ -48,8 +50,9 @@ export const SemesterCard = ({
   useEffect(() => {
     setTotalSemCU(
       semester.courses
-        .map((c, i, arr) => refmap!.get(c))
-        .map((c, i, arr) => c!.credits)
+        .map((c) => refmap!.get(c))
+        .filter((c) => c!.creditable)
+        .map((c) => c!.credits)
         .reduce((a, c) => a + c, 0),
     );
   }, [semester, refmap]);
@@ -97,6 +100,10 @@ export const SemesterCard = ({
             if (refmap.has(courseCode)) {
               augmentedCourse = refmap.get(courseCode)!;
               // Have to force TypeScript to comply with ! since we alr checked hasmap for said course code
+            }
+
+            if (!augmentedCourse.creditable) {
+              return <></>;
             }
 
             return (
