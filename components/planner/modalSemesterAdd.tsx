@@ -16,9 +16,14 @@ import { PlanarDataType, PlannerUserScheduleSemesterType } from "@/types";
 type AddSemesterModalProps = {
   data: PlanarDataType;
   setData: Function;
+  setUpToDate: Function;
 };
 
-export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
+export const AddSemesterModal = ({
+  data,
+  setData,
+  setUpToDate,
+}: AddSemesterModalProps) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [semName, setSemName] = useState<string | undefined>(undefined);
 
@@ -35,6 +40,7 @@ export const AddSemesterModal = ({ data, setData }: AddSemesterModalProps) => {
 
       setData({ ...data, user_schedule: modifiedUserSchedule });
       setSemName(undefined);
+      setUpToDate(false);
       onClose();
     }
   };

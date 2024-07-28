@@ -159,6 +159,7 @@ export default function PlannerPage({
   const handleSchedule = () => {
     scheduleCourse(data, setData, setCourseError);
     dependencyCheck(data, courseHashmap, setCourseError);
+    setStatus(false);
   };
 
   useEffect(() => {
@@ -176,7 +177,7 @@ export default function PlannerPage({
 
   const handleDragOver = (event: any) => {
     const { source, target } = event.operation;
-
+    console.log(event.operation);
     if (source && target) {
       const srcSem: number = source.sortable.group;
       const srcSemIdx: number = source.sortable.index;
@@ -278,7 +279,11 @@ export default function PlannerPage({
                 <></>
               )}
 
-              <AddSemesterModal data={data} setData={setData} />
+              <AddSemesterModal
+                data={data}
+                setData={setData}
+                setUpToDate={setStatus}
+              />
               <AddCourseModal
                 data={data}
                 setData={setData}
@@ -292,7 +297,7 @@ export default function PlannerPage({
 
       <div className="flex w-full h-svh overflow-x-auto flex-1">
         <CourseErrorContext.Provider value={courseError!}>
-          <DragDropProvider onDragOver={handleDragOver}>
+          <DragDropProvider onDragEnd={handleDragOver}>
             {data == null || courseHashmap == null || status == false ? (
               <></>
             ) : (
