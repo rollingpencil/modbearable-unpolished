@@ -377,7 +377,14 @@ export const scheduleCourse = async (
   });
 
   setData({ ...data, user_schedule: user_schedule });
-  setCourseError(filteredErrorLogs);
+
+  let masterCourseHashmap = new Map(masterCourseList.map((c) => [c.code, c]));
+
+  dependencyCheck(
+    { ...data!, user_schedule: user_schedule },
+    masterCourseHashmap,
+    setCourseError,
+  );
 };
 export const dependencyCheck = async (
   data: PlanarDataType | null,

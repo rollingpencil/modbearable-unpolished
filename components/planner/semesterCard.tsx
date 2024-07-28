@@ -87,7 +87,7 @@ export const SemesterCard = ({
           )}
         </span>
       </div>
-      <div ref={dropRef} className="flex-1 overflow-y-auto">
+      <div ref={dropRef} className="flex-1 overflow-y-auto h-5/6">
         {refmap == null ? (
           <></>
         ) : (
