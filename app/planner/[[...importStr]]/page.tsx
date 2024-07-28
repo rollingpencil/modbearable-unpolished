@@ -158,7 +158,6 @@ export default function PlannerPage({
 
   const handleSchedule = () => {
     scheduleCourse(data, setData, setCourseError);
-    dependencyCheck(data, courseHashmap, setCourseError);
     setStatus(false);
   };
 
@@ -177,6 +176,7 @@ export default function PlannerPage({
 
   const handleDragOver = (event: any) => {
     const { source, target } = event.operation;
+
     console.log(event.operation);
     if (source && target) {
       const srcSem: number = source.sortable.group;
