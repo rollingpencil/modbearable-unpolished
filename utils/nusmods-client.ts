@@ -22,3 +22,10 @@ export const retrieveSpecificMods = async (
 
   return baseResponse;
 };
+
+export const searchModules = async (cohort: string, query: string) => {
+    const response = await fetch(`https://api.nusmods.com/v2/${cohort}/moduleList.json`);
+    const modules = await response.json();
+    return modules.filter((mod: any) => mod.moduleCode.includes(query.toUpperCase()));
+  };
+  

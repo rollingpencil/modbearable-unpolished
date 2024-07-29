@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
@@ -12,13 +12,14 @@ import {
   SelectItem,
 } from "@nextui-org/react";
 import { PlusOutlined } from "@ant-design/icons";
+import Autosuggest from "react-autosuggest";
 
 import {
   PlanarDataType,
   PlannerCourseType,
   PlannerUserScheduleSemesterType,
 } from "@/types";
-import { retrieveSpecificMods } from "@/utils/nusmods-client";
+import { retrieveSpecificMods, searchModules } from "@/utils/nusmods-client";
 
 type AddCourseModalProps = {
   data: PlanarDataType;
@@ -35,6 +36,22 @@ export const AddCourseModal = ({
   const [courseCode, setCourseCode] = useState<string | undefined>(undefined);
   const [sem, setSem] = useState<number | undefined>(undefined);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [courseSuggestions, setCourseSuggestions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (courseCode) {
+      searchModules(data.cohort, courseCode).then((results) => {
+        setCourseSuggestions(
+          results.map((mod) => ({
+            moduleCode: mod.moduleCode,
+            title: mod.title,
+          })),
+        );
+      });
+    } else {
+      setCourseSuggestions([]);
+    }
+  }, [courseCode, data.cohort]);
 
   const handleAddCourse = () => {
     if (courseCode != undefined && sem != undefined) {
@@ -99,6 +116,22 @@ export const AddCourseModal = ({
     }
   };
 
+  const getSuggestionValue = (suggestion) => suggestion.moduleCode;
+  const renderSuggestion = (suggestion) => (
+    <div>
+      {suggestion.moduleCode} - {suggestion.title}
+    </div>
+  );
+
+  const inputProps = {
+    placeholder: "CS1231S",
+    value: courseCode || "",
+    onChange: (event, { newValue }) => {
+      setCourseCode(newValue);
+    },
+    required: true,
+  };
+
   return (
     <>
       <Button
@@ -126,25 +159,27 @@ export const AddCourseModal = ({
                 Add Course
               </ModalHeader>
               <ModalBody>
-                <Input
-                  isClearable
-                  isRequired
-                  defaultValue=""
-                  errorMessage={errorMessage}
-                  isInvalid={errorMessage != null}
-                  label="Name"
-                  placeholder="CS1231S"
-                  variant="bordered"
-                  onValueChange={(value) => {
-                    value == ""
-                      ? setCourseCode(undefined)
-                      : setCourseCode(value);
+                <Autosuggest
+                  suggestions={courseSuggestions}
+                  onSuggestionsFetchRequested={({ value }) => {
+                    searchModules(data.cohort, value).then((results) => {
+                      setCourseSuggestions(
+                        results.map((mod) => ({
+                          moduleCode: mod.moduleCode,
+                          title: mod.title,
+                        })),
+                      );
+                    });
                   }}
+                  onSuggestionsClearRequested={() => setCourseSuggestions([])}
+                  getSuggestionValue={getSuggestionValue}
+                  renderSuggestion={renderSuggestion}
+                  inputProps={inputProps}
                 />
                 <Select
                   isRequired
                   label="Semester"
-                  placeholder="Select an semester"
+                  placeholder="Select a semester"
                   onChange={(e) => setSem(Number(e.target.value))}
                 >
                   {data.user_schedule
