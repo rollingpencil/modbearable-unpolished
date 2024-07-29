@@ -6,6 +6,9 @@ import {
   PlannerUserScheduleSemesterType,
 } from "@/types/";
 
+// filter prereqisities by checking against the planner data type, remove any courses that is not in the planner data.
+// for example, the prerequities for cs2030s is cs1010, cs1010a, cs1010e, cs1010j, cs1010s, cs1010x or cs1101s. if the major is computer science,
+// the method will filter out everything from the prerequities and only show cs1101s. Hence, reducing the space needed for the planner
 const fetchAndFilterPrerequisites = async (
   courseCode: string,
   courses: PlannerCourseType[],
@@ -63,6 +66,8 @@ const fetchAndFilterPrerequisites = async (
   }
 };
 
+// process any manual prerequities if any. there are some courses that has requires prerequities to be added manually
+// for example, the prereq of es2660 and cs2101 is es1103. this is not reflected in nusmods so we have to account for it as an edge case
 const processCourseData = async (
   course: PlannerCourseType,
   allCourses: PlannerCourseType[],
@@ -114,6 +119,8 @@ const processCourseData = async (
   }
 };
 
+// reads the planner data, update the planner data with data such as prerequities from NUSMODS API
+// the method also processes any take together fields where there are a pair of courses that must be taken together in the same semester such as CS2101 and CS2103T
 export const processJsonData = async (
   jsonData: PlanarDataType,
   setData: Function,
