@@ -1,52 +1,23 @@
-# Next.js & NextUI Template
+# ModBearble
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
+A tool for easing your course planning for NUS.
 
-[Try it on CodeSandbox](https://githubbox.com/nextui-org/next-app-template)
+## Features
 
-## Technologies Used
+- Module Dependency Check
+- Major Requirements Check
+- Kanban-style course planner
+- Import/Export of Schedule
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+## Deployment
 
-## How to Use
+Prerequisites: Since this project uses MySQL as its database, please have an instance setup.
 
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
+1. Create an `.env.production` file with the following contents:
 ```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
-npm install
+DATABASE_URL="mysql://<username>:<password>@<server address>:<port>/<database-name>"    
 ```
-
-### Run the development server
-
-```bash
-npm run dev
-```
-
-### Setup pnpm (optional)
-
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
-
-```bash
-public-hoist-pattern[]=*@nextui-org/*
-```
-
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+2. Use the provided Dockerfile to create your build.
 
 ## License
 
